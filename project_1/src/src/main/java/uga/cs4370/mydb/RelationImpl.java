@@ -95,7 +95,7 @@ class RelationImpl implements Relation {
         for (int i = 0; i < row.size(); ++i) {
             if (row.get(i).getType() != types.get(i)) {
                 throw new IllegalArgumentException("Value types in the row do not "
-                        + "match the schema.");
+                    + "match the schema.");
             }
         }
         rows.add(new ArrayList<>(row));
@@ -110,7 +110,7 @@ class RelationImpl implements Relation {
         if (!Files.exists(Paths.get(path))) {
             throw new IllegalArgumentException("File does not exist: " + path);
         }
-
+        
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -118,12 +118,12 @@ class RelationImpl implements Relation {
                 String[] values = line.split("\",\"", -1);
                 if (values.length != this.types.size()) {
                     throw new IllegalArgumentException("CSV file format does not match the "
-                            + "schema of the relation.");
+                        + "schema of the relation.");
                 }
                 // Remove leading and trailing quotes from the first and last elements
                 values[0] = values[0].replaceFirst("^\"", "");
                 values[values.length - 1] = values[values.length - 1].replaceAll("\"$", "");
-
+                
                 List<Cell> row = new ArrayList<>();
                 for (int i = 0; i < values.length; i++) {
                     values[i] = values[i].replace("\"\"", "\""); // unescape double quotes.
@@ -172,28 +172,28 @@ class RelationImpl implements Relation {
             }
             columnWidths.add(Math.min(maxWidth, MAX_COLUMN_WIDTH));
         }
-
+        
         // Print row divider
         System.out.print("+");
         for (int width : columnWidths) {
             System.out.print("-".repeat(width + 2) + "+");
         }
         System.out.println();
-
+        
         // Print table header
         System.out.print("| ");
         for (int i = 0; i < attributes.size(); i++) {
             System.out.print(String.format("%-" + columnWidths.get(i) + "s | ", attributes.get(i)));
         }
         System.out.println();
-
+        
         // Print row divider
         System.out.print("+");
         for (int width : columnWidths) {
             System.out.print("-".repeat(width + 2) + "+");
         }
         System.out.println();
-
+        
         // Print each row
         for (List<Cell> row : rows) {
             System.out.print("| ");
@@ -215,7 +215,7 @@ class RelationImpl implements Relation {
             }
             System.out.println();
         }
-
+        
         // Print row divider
         System.out.print("+");
         for (int width : columnWidths) {

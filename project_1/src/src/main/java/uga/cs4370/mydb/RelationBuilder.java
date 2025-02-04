@@ -26,7 +26,7 @@ public class RelationBuilder {
         }
         if (attrTypes != null && attrTypes.size() != attrNames.size()) {
             throw new IllegalArgumentException("Number of attribute names is not equal to the " 
-                            + "number of attribute types.");
+                + "number of attribute types.");
         }
         for (String attrName: attrNames) {
             if (attrName == null || attrName.trim().length() == 0) {
@@ -55,7 +55,7 @@ public class RelationBuilder {
         }
         if (attrNames != null && attrNames.size() != attrTypes.size()) {
             throw new IllegalArgumentException("Number of attribute types is not equal to the " 
-                            + "number of attribute names.");
+                + "number of attribute names.");
         }
         for (Type type: attrTypes) {
             if (type == null) {
@@ -65,7 +65,7 @@ public class RelationBuilder {
         this.attrTypes = attrTypes;
         return this;
     }
-    
+
     /**
      * Create a new Relation instance.
      * 
@@ -79,5 +79,5 @@ public class RelationBuilder {
         }
         return new RelationImpl(attrTypes, attrNames);
     }
-    
+
 }

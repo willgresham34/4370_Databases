@@ -13,5 +13,5 @@ public interface Predicate {
      * if the row passes the predicate.
      */
     public boolean check(List<Cell> row);
-    
+
 }

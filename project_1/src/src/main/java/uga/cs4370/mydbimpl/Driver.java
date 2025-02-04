@@ -7,7 +7,7 @@ import uga.cs4370.mydb.RelationBuilder;
 import uga.cs4370.mydb.Type;
 
 public class Driver {
-    
+
     public static void main(String[] args) {
         // Following is an example of how to use the relation class.
         // This creates a table with three columns with below mentioned
@@ -16,9 +16,9 @@ public class Driver {
         // Path should be replaced with a correct file path for a compatible
         // CSV file.
         Relation rel1 = new RelationBuilder()
-                .attributeNames(List.of("Col01_Name", "Col02_Name", "Col03_Name"))
-                .attributeTypes(List.of(Type.INTEGER, Type.STRING, Type.DOUBLE))
-                .build();
+            .attributeNames(List.of("Col01_Name", "Col02_Name", "Col03_Name"))
+            .attributeTypes(List.of(Type.INTEGER, Type.STRING, Type.DOUBLE))
+            .build();
         rel1.loadData("/path/to/exported/csv_file");
         rel1.print();
     }

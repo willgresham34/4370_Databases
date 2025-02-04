@@ -4,7 +4,7 @@ package uga.cs4370.mydb;
  * Represents a cell in a row of a relation.
  */
 public class Cell {
-    
+
     private Object data;
     private Type type;
 
