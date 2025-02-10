@@ -1,3 +1,7 @@
 .DS_Store
 
+<<<<<<< HEAD
 target/
+=======
+**/target/
+>>>>>>> 94b09b538b8903cf1cae0abe5ea07b9aefc825ad
