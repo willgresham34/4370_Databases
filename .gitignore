@@ -1,3 +1,7 @@
 .DS_Store
+<<<<<<< HEAD
 
 target/
+=======
+project_1/src/target/
+>>>>>>> ee8c959842fd19769fc8a219f02877ea934949e1
