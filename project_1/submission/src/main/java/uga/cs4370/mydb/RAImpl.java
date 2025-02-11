@@ -1,6 +1,5 @@
 package uga.cs4370.mydb;
 
-import java.text.NumberFormat.Style;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +90,7 @@ public class RAImpl implements RA {
     public Relation join(Relation rel1, Relation rel2) {
 
         // find common cols
-        List<String> commonAttr = new ArrayList<>(rel1.getAttrs());
+        List<String> commonAttr = new ArrayList<String>(rel1.getAttrs());
         commonAttr.retainAll(rel2.getAttrs());
 
         if (commonAttr.isEmpty()) {
@@ -107,12 +106,29 @@ public class RAImpl implements RA {
             rel2Index.add(rel2.getAttrIndex(attr));
         }
 
+        // create new set of cols
+        List<String> resAttrs = new ArrayList<String>(rel1.getAttrs());
+        for (String attr : rel2.getAttrs()) {
+            if (!commonAttr.contains(attr)) {
+                resAttrs.add(attr);
+            }
+        }
+
+        // create types for
+        List<Type> resTypes = new ArrayList<Type>();
+        for (String attr : rel1.getAttrs()) {
+            resTypes.add(rel1.getTypes().get(rel1.getAttrIndex(attr)));
+        }
+
+        for (String attr : rel2.getAttrs()) {
+            if (!commonAttr.contains(attr)) {
+                resTypes.add(rel2.getTypes().get(rel2.getAttrIndex(attr)));
+            }
+        }
+
         // use marked columns to find common values
 
-        List<String> resAttr = null;
-        List<Type> resTypes = null;
-
-        Relation result = new RelationBuilder().attributeNames(resAttr).attributeTypes(resTypes).build();
+        Relation result = new RelationBuilder().attributeNames(resAttrs).attributeTypes(resTypes).build();
 
         return result;
     };
