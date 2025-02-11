@@ -126,12 +126,47 @@ public class RAImpl implements RA {
             }
         }
 
-        // use marked columns to find common values
-
+        // create relation using resulting types and attributes
         Relation result = new RelationBuilder().attributeNames(resAttrs).attributeTypes(resTypes).build();
 
+        for (int i = 0; i < rel1.getSize(); i++) {
+            // get row from rel 1
+            List<Cell> rel1Row = rel1.getRow(i);
+
+            for (int j = 0; j < rel2.getSize(); j++) {
+
+                // get row from rel 2
+                List<Cell> rel2Row = rel2.getRow(j);
+
+                // prep match
+                boolean match = true;
+
+                // check the attribute values of each common cell against eachother
+                for (int k = 0; k < commonAttr.size(); k++) {
+                    if (!rel1Row.get(rel1Index.get(k)).equals(rel2Row.get(rel2Index.get(k)))) {
+                        match = false;
+                        break;
+                    }
+                }
+
+                // merge matches
+                if (match) {
+                    List<Cell> mergedRow = new ArrayList<>(rel1Row);
+
+                    // check each col of rel2 against the common ones & add to row if false
+                    for (String attr : rel2.getAttrs()) {
+                        if (!commonAttr.contains(attr)) {
+                            mergedRow.add(rel2Row.get(rel2.getAttrIndex(attr)));
+                        }
+                    }
+
+                    result.insert(mergedRow);
+                }
+            }
+        }
+
         return result;
-    };
+    }
 
     /**
      * Performs theta join on relations rel1 and rel2 with predicate p.

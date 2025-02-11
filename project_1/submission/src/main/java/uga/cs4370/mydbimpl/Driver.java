@@ -31,7 +31,7 @@ public class Driver {
                 .attributeNames(List.of("dept_name", "building", "budget"))
                 .attributeTypes(List.of(Type.STRING, Type.STRING, Type.DOUBLE))
                 .build();
-        department.loadData("./tables/department_export.csv");
+        department.loadData("./project_1/tables/department_export.csv");
         department.print();
 
         // classroom: building, room_number, capacity
@@ -39,13 +39,16 @@ public class Driver {
                 .attributeNames(List.of("building", "room_number", "capacity"))
                 .attributeTypes(List.of(Type.STRING, Type.INTEGER, Type.INTEGER))
                 .build();
-        classroom.loadData("./tables/classroom_export.csv");
+        classroom.loadData("./project_1/tables/classroom_export.csv");
         classroom.print();
 
         Relation test = ra.join(department, classroom);
 
         test.print();
 
+        Relation test2 = ra.join(classroom, department);
+
+        test2.print();
         // department: dept_name, building, budget
 
         // takes: ID, course_id, sec_id, semester, year, grade
