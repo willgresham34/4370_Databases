@@ -18,6 +18,7 @@ public class RAImpl implements RA {
      * @return The resulting relation after applying the select operation.
      */
     public Relation select(Relation rel, Predicate p) {
+        return rel;
     };
 
     /**
@@ -30,6 +31,7 @@ public class RAImpl implements RA {
      *                                  present in rel.
      */
     public Relation project(Relation rel, List<String> attrs) {
+        return rel;
     };
 
     /**
@@ -40,6 +42,7 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException If rel1 and rel2 are not compatible.
      */
     public Relation union(Relation rel1, Relation rel2) {
+        return rel1;
     };
 
     /**
@@ -50,6 +53,7 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException If rel1 and rel2 are not compatible.
      */
     public Relation diff(Relation rel1, Relation rel2) {
+        return rel1;
     };
 
     /**
@@ -63,6 +67,7 @@ public class RAImpl implements RA {
      *                                  matching argument counts.
      */
     public Relation rename(Relation rel, List<String> origAttr, List<String> renamedAttr) {
+        return rel;
     };
 
     /**
@@ -73,6 +78,7 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
     public Relation cartesianProduct(Relation rel1, Relation rel2) {
+        return rel1;
     };
 
     /**
@@ -81,6 +87,7 @@ public class RAImpl implements RA {
      * @return The resulting relation after applying natural join.
      */
     public Relation join(Relation rel1, Relation rel2) {
+        return rel1;
     };
 
     /**
@@ -95,6 +102,7 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
     public Relation join(Relation rel1, Relation rel2, Predicate p) {
+        return rel1;
     };
 
 }

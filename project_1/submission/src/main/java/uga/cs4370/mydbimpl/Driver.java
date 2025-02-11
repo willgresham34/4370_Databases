@@ -15,12 +15,20 @@ public class Driver {
         // After creating the table, data is loaded from a CSV file.
         // Path should be replaced with a correct file path for a compatible
         // CSV file.
-        Relation rel1 = new RelationBuilder()
-            .attributeNames(List.of("Col01_Name", "Col02_Name", "Col03_Name"))
-            .attributeTypes(List.of(Type.INTEGER, Type.STRING, Type.DOUBLE))
-            .build();
-        rel1.loadData("/path/to/exported/csv_file");
-        rel1.print();
+
+        // Relation advisor = new RelationBuilder()
+        // .attributeNames(List.of("Student_Id", "Instructor_Id"))
+        // .attributeTypes(List.of(Type.INTEGER, Type.INTEGER))
+        // .build();
+        // advisor.loadData("./tables/advisor_export.csv");
+        // advisor.print();
+
+        Relation department = new RelationBuilder()
+                .attributeNames(List.of("dept_name", "building", "budget"))
+                .attributeTypes(List.of(Type.STRING, Type.STRING, Type.DOUBLE))
+                .build();
+        department.loadData("./tables/department_export.csv");
+        department.print();
     }
 
 }
