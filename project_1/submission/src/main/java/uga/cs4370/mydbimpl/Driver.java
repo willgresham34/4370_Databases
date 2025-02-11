@@ -27,12 +27,12 @@ public class Driver {
 
         RAImpl ra = new RAImpl();
 
+        // department: dept_name, building, budget
         Relation department = new RelationBuilder()
                 .attributeNames(List.of("dept_name", "building", "budget"))
                 .attributeTypes(List.of(Type.STRING, Type.STRING, Type.DOUBLE))
                 .build();
         department.loadData("./project_1/tables/department_export.csv");
-        department.print();
 
         // classroom: building, room_number, capacity
         Relation classroom = new RelationBuilder()
@@ -40,22 +40,40 @@ public class Driver {
                 .attributeTypes(List.of(Type.STRING, Type.INTEGER, Type.INTEGER))
                 .build();
         classroom.loadData("./project_1/tables/classroom_export.csv");
-        classroom.print();
 
-        Relation test = ra.join(department, classroom);
+        // takes: ID, course_id, sec_id, semester, year, grade (ID can also be t_ID)
+        Relation takes = new RelationBuilder()
+                .attributeNames(List.of("ID", "course_id", "sec_id", "semester", "year", "grade"))
+                .attributeTypes(
+                        List.of(Type.INTEGER, Type.INTEGER, Type.INTEGER, Type.STRING, Type.INTEGER, Type.STRING))
+                .build();
+        takes.loadData("./project_1/tables/takes_export.csv");
 
-        test.print();
-
-        Relation test2 = ra.join(classroom, department);
-
-        test2.print();
-        // department: dept_name, building, budget
-
-        // takes: ID, course_id, sec_id, semester, year, grade
-
-        // teaches: ID, course_id, sec_id, semester, year
+        // teaches: ID, course_id, sec_id, semester, year (ID can also be s_ID
+        Relation teaches = new RelationBuilder()
+                .attributeNames(List.of("ID", "course_id", "sec_id", "semester", "year"))
+                .attributeTypes(
+                        List.of(Type.INTEGER, Type.INTEGER, Type.INTEGER, Type.STRING, Type.INTEGER))
+                .build();
+        teaches.loadData("./project_1/tables/teaches_export.csv");
 
         // advisor: s_ID, i_ID
+        Relation advisors = new RelationBuilder()
+                .attributeNames(List.of("s_ID", "i_ID"))
+                .attributeTypes(
+                        List.of(Type.INTEGER, Type.INTEGER))
+                .build();
+        advisors.loadData("./project_1/tables/advisors_export.csv");
+
+        // ----------------------- Queries below here ----------------------------
+
+        // natural join test(s)
+        Relation classroomDeptNJ = ra.join(department, classroom);
+        classroomDeptNJ.print();
+
+        Relation teachesXTakes = ra.join(takes, teaches);
+        teachesXTakes.print();
+
     }
 
 }
