@@ -19,6 +19,7 @@ public class RAImpl implements RA {
      * @return The resulting relation after applying the select operation.
      */
     public Relation select(Relation rel, Predicate p) {
+        return rel;
     };
 
     /**
@@ -31,6 +32,7 @@ public class RAImpl implements RA {
      *                                  present in rel.
      */
     public Relation project(Relation rel, List<String> attrs) {
+        return rel;
     };
 
     /**
@@ -192,6 +194,7 @@ public class RAImpl implements RA {
      *                                  matching argument counts.
      */
     public Relation rename(Relation rel, List<String> origAttr, List<String> renamedAttr) {
+        return rel;
     };
 
     /**
@@ -202,6 +205,7 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
     public Relation cartesianProduct(Relation rel1, Relation rel2) {
+        return rel1;
     };
 
     /**
@@ -210,7 +214,85 @@ public class RAImpl implements RA {
      * @return The resulting relation after applying natural join.
      */
     public Relation join(Relation rel1, Relation rel2) {
-    };
+
+        // find common cols
+        List<String> commonAttr = new ArrayList<String>(rel1.getAttrs());
+        commonAttr.retainAll(rel2.getAttrs());
+
+        if (commonAttr.isEmpty()) {
+            throw new IllegalArgumentException("No common attributes to join on");
+        }
+
+        // mark cols
+        List<Integer> rel1Index = new ArrayList<Integer>();
+        List<Integer> rel2Index = new ArrayList<Integer>();
+
+        for (String attr : commonAttr) {
+            rel1Index.add(rel1.getAttrIndex(attr));
+            rel2Index.add(rel2.getAttrIndex(attr));
+        }
+
+        // create new set of cols
+        List<String> resAttrs = new ArrayList<String>(rel1.getAttrs());
+        for (String attr : rel2.getAttrs()) {
+            if (!commonAttr.contains(attr)) {
+                resAttrs.add(attr);
+            }
+        }
+
+        // create types for
+        List<Type> resTypes = new ArrayList<Type>();
+        for (String attr : rel1.getAttrs()) {
+            resTypes.add(rel1.getTypes().get(rel1.getAttrIndex(attr)));
+        }
+
+        for (String attr : rel2.getAttrs()) {
+            if (!commonAttr.contains(attr)) {
+                resTypes.add(rel2.getTypes().get(rel2.getAttrIndex(attr)));
+            }
+        }
+
+        // create relation using resulting types and attributes
+        Relation result = new RelationBuilder().attributeNames(resAttrs).attributeTypes(resTypes).build();
+
+        for (int i = 0; i < rel1.getSize(); i++) {
+            // get row from rel 1
+            List<Cell> rel1Row = rel1.getRow(i);
+
+            for (int j = 0; j < rel2.getSize(); j++) {
+
+                // get row from rel 2
+                List<Cell> rel2Row = rel2.getRow(j);
+
+                // prep match
+                boolean match = true;
+
+                // check the attribute values of each common cell against eachother
+                for (int k = 0; k < commonAttr.size(); k++) {
+                    if (!rel1Row.get(rel1Index.get(k)).equals(rel2Row.get(rel2Index.get(k)))) {
+                        match = false;
+                        break;
+                    }
+                }
+
+                // merge matches
+                if (match) {
+                    List<Cell> mergedRow = new ArrayList<>(rel1Row);
+
+                    // check each col of rel2 against the common ones & add to row if false
+                    for (String attr : rel2.getAttrs()) {
+                        if (!commonAttr.contains(attr)) {
+                            mergedRow.add(rel2Row.get(rel2.getAttrIndex(attr)));
+                        }
+                    }
+
+                    result.insert(mergedRow);
+                }
+            }
+        }
+
+        return result;
+    }
 
     /**
      * Performs theta join on relations rel1 and rel2 with predicate p.
@@ -224,6 +306,7 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
     public Relation join(Relation rel1, Relation rel2, Predicate p) {
+        return rel1;
     };
 
 }
