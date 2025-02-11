@@ -2,6 +2,8 @@ package uga.cs4370.mydbimpl;
 
 import java.util.List;
 
+import uga.cs4370.mydb.RA;
+import uga.cs4370.mydb.RAImpl;
 import uga.cs4370.mydb.Relation;
 import uga.cs4370.mydb.RelationBuilder;
 import uga.cs4370.mydb.Type;
@@ -23,12 +25,34 @@ public class Driver {
         // advisor.loadData("./tables/advisor_export.csv");
         // advisor.print();
 
+        RAImpl ra = new RAImpl();
+
         Relation department = new RelationBuilder()
                 .attributeNames(List.of("dept_name", "building", "budget"))
                 .attributeTypes(List.of(Type.STRING, Type.STRING, Type.DOUBLE))
                 .build();
         department.loadData("./tables/department_export.csv");
         department.print();
+
+        // classroom: building, room_number, capacity
+        Relation classroom = new RelationBuilder()
+                .attributeNames(List.of("building", "room_number", "capacity"))
+                .attributeTypes(List.of(Type.STRING, Type.INTEGER, Type.INTEGER))
+                .build();
+        classroom.loadData("./tables/classroom_export.csv");
+        classroom.print();
+
+        Relation test = ra.join(department, classroom);
+
+        test.print();
+
+        // department: dept_name, building, budget
+
+        // takes: ID, course_id, sec_id, semester, year, grade
+
+        // teaches: ID, course_id, sec_id, semester, year
+
+        // advisor: s_ID, i_ID
     }
 
 }

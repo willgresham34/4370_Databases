@@ -1,5 +1,7 @@
 package uga.cs4370.mydb;
 
+import java.text.NumberFormat.Style;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -87,7 +89,32 @@ public class RAImpl implements RA {
      * @return The resulting relation after applying natural join.
      */
     public Relation join(Relation rel1, Relation rel2) {
-        return rel1;
+
+        // find common cols
+        List<String> commonAttr = new ArrayList<>(rel1.getAttrs());
+        commonAttr.retainAll(rel2.getAttrs());
+
+        if (commonAttr.isEmpty()) {
+            throw new IllegalArgumentException("No common attributes to join on");
+        }
+
+        // mark cols
+        List<Integer> rel1Index = new ArrayList<Integer>();
+        List<Integer> rel2Index = new ArrayList<Integer>();
+
+        for (String attr : commonAttr) {
+            rel1Index.add(rel1.getAttrIndex(attr));
+            rel2Index.add(rel2.getAttrIndex(attr));
+        }
+
+        // use marked columns to find common values
+
+        List<String> resAttr = null;
+        List<Type> resTypes = null;
+
+        Relation result = new RelationBuilder().attributeNames(resAttr).attributeTypes(resTypes).build();
+
+        return result;
     };
 
     /**
