@@ -90,24 +90,29 @@ public class Driver {
         // return the name of the advisors of students with more then 70 credit hours in
 
         // get all students in cs with 70 or more credits
-        Relation csStudentsWith70 = ra.select(students,
-                row -> row.get(students.getAttrIndex("dept_name")).getAsString() == "dept_name"
-                        && row.get(students.getAttrIndex("tot_cred")).getAsDouble() > 70);
-        // project just there student ids
-        Relation w70Ids = ra.project(csStudentsWith70, List.of("ID"));
-        // join the student ids with the advisor table
-        Relation advisorOfStu = ra.join(w70Ids, advisors,
-                row -> row.get(0).getAsInt() == row.get(advisors.getAttrIndex("s_ID") + 1).getAsInt());
-        // project just the instructor ids
-        Relation instIdsOfCsStuds = ra.project(advisorOfStu, List.of("i_ID"));
-        // combine instIds with instructor table
-        Relation instOfCsStuds = ra.join(instIdsOfCsStuds, instructors,
-                row -> row.get(0).getAsInt() == row.get(instructors.getAttrIndex("ID") + 1).getAsInt());
-        // project only the names of the instructors
-        Relation instNamesOfCsStudWith70 = ra.project(instOfCsStuds, List.of("name"));
+        // Relation csStudentsWith70 = ra.select(students,
+        // row -> row.get(students.getAttrIndex("dept_name")).getAsString() ==
+        // "dept_name"
+        // && row.get(students.getAttrIndex("tot_cred")).getAsDouble() > 70);
+        // // project just there student ids
+        // Relation w70Ids = ra.project(csStudentsWith70, List.of("ID"));
+        // // join the student ids with the advisor table
+        // Relation advisorOfStu = ra.join(w70Ids, advisors,
+        // row -> row.get(0).getAsInt() == row.get(advisors.getAttrIndex("s_ID") +
+        // 1).getAsInt());
+        // // project just the instructor ids
+        // Relation instIdsOfCsStuds = ra.project(advisorOfStu, List.of("i_ID"));
+        // // combine instIds with instructor table
+        // Relation instOfCsStuds = ra.join(instIdsOfCsStuds, instructors,
+        // row -> row.get(0).getAsInt() == row.get(instructors.getAttrIndex("ID") +
+        // 1).getAsInt());
+        // // project only the names of the instructors
+        // Relation instNamesOfCsStudWith70 = ra.project(instOfCsStuds,
+        // List.of("name"));
 
-        System.out.println("Advisor names of the CS students with more than 70 total credit hours");
-        instNamesOfCsStudWith70.print();
+        // System.out.println("Advisor names of the CS students with more than 70 total
+        // credit hours");
+        // instNamesOfCsStudWith70.print();
 
     }
 
