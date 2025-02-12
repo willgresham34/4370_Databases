@@ -180,7 +180,49 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
     public Relation join(Relation rel1, Relation rel2, Predicate p) {
-        return rel1;
+
+        // find common cols
+        List<String> commonAttr = new ArrayList<String>(rel1.getAttrs());
+        commonAttr.retainAll(rel2.getAttrs());
+
+        if (!commonAttr.isEmpty()) {
+            throw new IllegalArgumentException("Cannot join relations with common attributes");
+        }
+
+        // create result cols
+        List<String> resAttrs = new ArrayList<String>(rel1.getAttrs());
+        resAttrs.addAll(rel2.getAttrs());
+
+        // create result types
+        List<Type> resTypes = new ArrayList<Type>(rel1.getTypes());
+        resTypes.addAll(rel2.getTypes());
+
+        System.out.println(resAttrs.toString());
+
+        // create relation using resulting types and attributes
+        Relation result = new RelationBuilder().attributeNames(resAttrs).attributeTypes(resTypes).build();
+
+        for (int i = 0; i < rel1.getSize(); i++) {
+            // get row from rel 1
+            List<Cell> rel1Row = rel1.getRow(i);
+
+            for (int j = 0; j < rel2.getSize(); j++) {
+
+                // get row from rel 2
+                List<Cell> rel2Row = rel2.getRow(j);
+
+                // create combined row
+                List<Cell> mergedRow = new ArrayList<>();
+                mergedRow.addAll(rel1Row);
+                mergedRow.addAll(rel2Row);
+
+                if (p.check(mergedRow)) {
+                    result.insert(mergedRow);
+                }
+            }
+        }
+
+        return result;
     };
 
 }
