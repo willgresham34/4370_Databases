@@ -5,22 +5,39 @@ import java.util.List;
 
 /**
  * Interface for the relational algebra operators.
- * 
- * Note: The implementing classes should not modify the relations
- * that are passed as parameters to the methods. Instead new relations
- * should be initialized and returned as the result.
+ *
+ * Note: The implementing classes should not modify the relations that are
+ * passed as parameters to the methods. Instead new relations should be
+ * initialized and returned as the result.
  */
 public class RAImpl implements RA {
 
     /**
-     * Performs the select operation on the relation rel
-     * by applying the predicate p.
-     * 
+     * Performs the select operation on the relation rel by applying the
+     * predicate p.
+     *
      * @return The resulting relation after applying the select operation.
      */
     public Relation select(Relation rel, Predicate p) {
-        return rel;
-    };
+        Relation ans = new RelationBuilder()
+                .attributeNames(rel.getAttrs())
+                .attributeTypes(rel.getTypes())
+                .build();
+
+        int size = rel.getSize();
+
+        for (int i = 0; i < size; i++) {
+            boolean isValid = p.check(rel.getRow(i));
+
+            if (isValid) {
+                ans.insert(rel.getRow(i));
+            }
+        }
+        return ans;
+
+    }
+
+    ;
 
     /**
      * Performs the project operation on the relation rel
@@ -32,8 +49,45 @@ public class RAImpl implements RA {
      *                                  present in rel.
      */
     public Relation project(Relation rel, List<String> attrs) {
-        return rel;
-    };
+
+        List<Type> types = rel.getTypes();
+        List<Type> new_types = new ArrayList<>();
+        List<String> rel_attrs = rel.getAttrs();
+
+        //Check if requested attributes are present in given relation
+        try {
+            for (int i = 0; i < attrs.size(); i++) {
+                boolean found = rel.hasAttr(attrs.get(i));
+                if (!found) {
+                    throw new IllegalArgumentException();
+                } else {
+                    int index = rel.getAttrIndex(attrs.get(i));
+                    new_types.add(rel.getRow(0).get(index).getType());
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            System.err.println("Requested attributes are not present in given Relation");
+            return rel;
+        }
+
+        //create new relation
+        Relation ans = new RelationBuilder().attributeNames(attrs).attributeTypes(new_types).build();
+
+        //Go thru given relation. Pick out cells in each row matching requested attrs and put in a list. insert "row" list into new relation
+        for (int i = 0; i < rel.getSize(); i++) {
+            List<Cell> new_row = new ArrayList<>();
+            List<Cell> current_row = rel.getRow(i);
+            for (int j = 0; j < attrs.size(); j++) {
+                int index = rel.getAttrIndex(attrs.get(j));
+                new_row.add(current_row.get(index));
+            }
+            ans.insert(new_row);
+        }
+
+        return ans;
+    }
+
+    ;
 
     /**
      * Performs the union operation on the relations rel1 and rel2.
@@ -195,7 +249,9 @@ public class RAImpl implements RA {
      */
     public Relation rename(Relation rel, List<String> origAttr, List<String> renamedAttr) {
         return rel;
-    };
+    }
+
+    ;
 
     /**
      * Performs cartesian product on relations rel1 and rel2.
@@ -206,7 +262,9 @@ public class RAImpl implements RA {
      */
     public Relation cartesianProduct(Relation rel1, Relation rel2) {
         return rel1;
-    };
+    }
+
+    ;
 
     /**
      * Performs natural join on relations rel1 and rel2.
@@ -296,13 +354,13 @@ public class RAImpl implements RA {
 
     /**
      * Performs theta join on relations rel1 and rel2 with predicate p.
-     * 
+     *
      * @return The resulting relation after applying theta join. The resulting
-     *         relation should have the attributes of both rel1 and rel2. The
-     *         attributes of rel1 should appear in the the order they appear in rel1
-     *         but before the attributes of rel2. Attributes of rel2 as well should
-     *         appear in the order they appear in rel2.
-     * 
+     * relation should have the attributes of both rel1 and rel2. The attributes
+     * of rel1 should appear in the the order they appear in rel1 but before the
+     * attributes of rel2. Attributes of rel2 as well should appear in the order
+     * they appear in rel2.
+     *
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
     public Relation join(Relation rel1, Relation rel2, Predicate p) {
@@ -349,6 +407,7 @@ public class RAImpl implements RA {
         }
 
         return result;
-    };
+    }
+;
 
 }
