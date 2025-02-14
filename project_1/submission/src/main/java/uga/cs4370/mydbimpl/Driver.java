@@ -79,6 +79,13 @@ public class Driver {
                 .build();
         students.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/student_export.csv");
 
+        // course: course_id, name, dept_name, cred_hr
+        Relation course = new RelationBuilder()
+                .attributeNames(List.of("course_id", "name", "dept_name", "cred_hr"))
+                .attributeTypes(List.of(Type.INTEGER, Type.STRING, Type.STRING, Type.INTEGER))
+                .build();
+        course.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/course_export.csv");
+
         // ----------------------- Queries below here ----------------------------
 
         /*
@@ -108,6 +115,31 @@ public class Driver {
         // System.out.println("Advisor names of the CS students with more than 70 total
         // credit hours");
         // instNamesOfCsStudWith70.print();
+
+        /*
+         * Connor's Query:
+         * Return the name and dept_name of students who took 
+         * any class in Civil Eng. in 2009.
+         */
+        // Get all Civil Eng. Courses with course id and type
+        // Relation civilEngCourses = ra.select(course,
+        //         row -> row.get(course.getAttrIndex("dept_name")).getAsString().equals("Civil Eng."));
+        // // Project only course_id
+        // Relation civilEngCid = ra.project(civilEngCourses, List.of("course_id"));
+        // // Join Civil Eng. classes on takes to get all civil eng course taken
+        // Relation takesCivilEngCourse = ra.join(civilEngCid, takes);
+        // // Select all courses taken in 2009 from takesCivilEngCourse
+        // Relation takesCivilEngCourse2009 = ra.select(takesCivilEngCourse, 
+        //         row -> row.get(takesCivilEngCourse.getAttrIndex("year")).getAsInt() == 2009);
+        // // Project only id
+        // Relation idTakesCivilEngCourse2009 = ra.project(takesCivilEngCourse2009, List.of("ID"));
+        // // Join on student
+        // Relation studentTakesCivilEngCourse2009 = ra.join(idTakesCivilEngCourse2009, students);
+        // // Project name, major
+        // Relation stu_nameMajorCivilEngCourse2009 = ra.project(studentTakesCivilEngCourse2009, List.of("name", "dept_name"));
+
+        // System.out.println("Name/Dept of students who took any class in Civil Eng. in 2009:");
+        // stu_nameMajorCivilEngCourse2009.print();
     }
 
 }
