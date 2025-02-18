@@ -54,7 +54,7 @@ public class RAImpl implements RA {
         List<Type> new_types = new ArrayList<>();
         List<String> rel_attrs = rel.getAttrs();
 
-        //Check if requested attributes are present in given relation
+        // Check if requested attributes are present in given relation
         try {
             for (int i = 0; i < attrs.size(); i++) {
                 boolean found = rel.hasAttr(attrs.get(i));
@@ -70,10 +70,11 @@ public class RAImpl implements RA {
             return rel;
         }
 
-        //create new relation
+        // create new relation
         Relation ans = new RelationBuilder().attributeNames(attrs).attributeTypes(new_types).build();
 
-        //Go thru given relation. Pick out cells in each row matching requested attrs and put in a list. insert "row" list into new relation
+        // Go thru given relation. Pick out cells in each row matching requested attrs
+        // and put in a list. insert "row" list into new relation
         for (int i = 0; i < rel.getSize(); i++) {
             List<Cell> new_row = new ArrayList<>();
             List<Cell> current_row = rel.getRow(i);
@@ -370,10 +371,13 @@ public class RAImpl implements RA {
      * Performs theta join on relations rel1 and rel2 with predicate p.
      *
      * @return The resulting relation after applying theta join. The resulting
-     * relation should have the attributes of both rel1 and rel2. The attributes
-     * of rel1 should appear in the the order they appear in rel1 but before the
-     * attributes of rel2. Attributes of rel2 as well should appear in the order
-     * they appear in rel2.
+     *         relation should have the attributes of both rel1 and rel2. The
+     *         attributes
+     *         of rel1 should appear in the the order they appear in rel1 but before
+     *         the
+     *         attributes of rel2. Attributes of rel2 as well should appear in the
+     *         order
+     *         they appear in rel2.
      *
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
@@ -394,8 +398,6 @@ public class RAImpl implements RA {
         // create result types
         List<Type> resTypes = new ArrayList<Type>(rel1.getTypes());
         resTypes.addAll(rel2.getTypes());
-
-        System.out.println(resAttrs.toString());
 
         // create relation using resulting types and attributes
         Relation result = new RelationBuilder().attributeNames(resAttrs).attributeTypes(resTypes).build();
@@ -421,7 +423,6 @@ public class RAImpl implements RA {
         }
 
         return result;
-    }
-;
+    };
 
 }
