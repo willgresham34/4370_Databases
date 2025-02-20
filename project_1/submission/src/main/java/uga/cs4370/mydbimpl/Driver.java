@@ -90,7 +90,9 @@ public class Driver {
         // ----------------------- Queries below here ----------------------------
         
         // ### Adam's Query ###
-        
+
+        System.out.println("BEGINNING OF Adam's query");
+
         // Return names of advisors who advise students majoring in math
         Relation math_students = ra.select(students, row -> row.get(students.getAttrIndex("dept_name")).getAsString().equals("Math"));
         // project ids from math students
@@ -104,11 +106,14 @@ public class Driver {
         // Project instructor names and print
         Relation inst_names = ra.project(inst_math, List.of("name"));
         inst_names.print();
-        
+
+
         // ### Anthony's Query ###
         // Rename Computer Science's dept_name in the course table to its full form
         // and take the cartesian product of this renamed course table and classroom.
-        
+
+        System.out.println("\nBEGINNING OF Anthony's query");
+
         // create a list of all courses in the computer science department 
         Relation courseInCompSci = ra.select(course, row -> row.get(course.getAttrIndex("dept_name")).getAsString().equals("Comp. Sci."));
         
@@ -121,13 +126,16 @@ public class Driver {
         System.out.println("renamed:");
         renamedCourseInCompSci.print();
         
-        // ANTHONY: test cartesianProduct()
+        // test cartesianProduct()
         Relation cartesianProductOfRenamedCourseInCompSciAndClassroom = ra.cartesianProduct(renamedCourseInCompSci, classroom);
         System.out.println("cartesianProductOfRenamedCourseInCompSciAndClassroom:");
         cartesianProductOfRenamedCourseInCompSciAndClassroom.print();
-        
+
+
         // ### Connor's Query ###
         // Return the name and dept_name of students who took any class in Civil Eng. in 2009
+
+        System.out.println("\nBEGINNING OF Connor's query");
         
         // Get all Civil Eng. Courses with course id and type
         Relation civilEngCourses = ra.select(course, row -> row.get(course.getAttrIndex("dept_name")).getAsString().equals("Civil Eng."));
@@ -145,11 +153,14 @@ public class Driver {
         Relation stu_nameMajorCivilEngCourse2009 = ra.project(studentTakesCivilEngCourse2009, List.of("name", "dept_name"));
         System.out.println("Name/Dept of students who took any class in Civil Eng. in 2009:");
         stu_nameMajorCivilEngCourse2009.print();
-        
+
+
         // ### Will's First Query
         // return the name of the advisors of students with more than 70 credit hours in
         // get all students in cs with 70 or more credits
-        
+
+        System.out.println("\nBEGINNING OF Will's first query");
+
         Relation csStudentsWith70 = ra.select(students, row -> row.get(students.getAttrIndex("dept_name")).getAsString().equals("Comp. Sci.") && row.get(students.getAttrIndex("tot_cred")).getAsDouble() > 70);
         
         // project just there student ids
@@ -169,10 +180,13 @@ public class Driver {
         Relation instNamesOfCsStudWith70 = ra.project(instOfCsStuds, List.of("name"));
         System.out.println("Advisor names of the CS students with more than 70 total credit hours");
         instNamesOfCsStudWith70.print();
-        
+
+
         // ### Will's Second Query ###
         // Return the names, semester and year of courses who are taught by teachers that make more than 100,000
-        
+
+        System.out.println("\nBEGINNING OF Will's second query");
+
         // get instructors who make 100k
         Relation instr_100k = ra.select(instructors, row -> row.get(instructors.getAttrIndex("salary")).getAsDouble() > 100000);
         
