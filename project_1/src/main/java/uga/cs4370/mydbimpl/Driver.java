@@ -32,28 +32,28 @@ public class Driver {
                 .attributeTypes(
                         List.of(Type.INTEGER, Type.INTEGER))
                 .build();
-        advisors.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/advisor_export.csv");
+        advisors.loadData("./project_1/src/main/java/uga/cs4370/mydbimpl/tables/advisor_export.csv");
         
         // classroom: building, room_number, capacity
         Relation classroom = new RelationBuilder()
                 .attributeNames(List.of("building", "room_number", "capacity"))
                 .attributeTypes(List.of(Type.STRING, Type.INTEGER, Type.INTEGER))
                 .build();
-        classroom.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/classroom_export.csv");
+        classroom.loadData("./project_1/src/main/java/uga/cs4370/mydbimpl/tables/classroom_export.csv");
         
         // course: course_id, name, dept_name, cred_hr
         Relation course = new RelationBuilder()
                 .attributeNames(List.of("course_id", "name", "dept_name", "cred_hr"))
                 .attributeTypes(List.of(Type.INTEGER, Type.STRING, Type.STRING, Type.INTEGER))
                 .build();
-        course.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/course_export.csv");
+        course.loadData("./project_1/src/main/java/uga/cs4370/mydbimpl/tables/course_export.csv");
         
         // department: dept_name, building, budget
         Relation department = new RelationBuilder()
                 .attributeNames(List.of("dept_name", "building", "budget"))
                 .attributeTypes(List.of(Type.STRING, Type.STRING, Type.DOUBLE))
                 .build();
-        department.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/department_export.csv");
+        department.loadData("./project_1/src/main/java/uga/cs4370/mydbimpl/tables/department_export.csv");
         
         // instructors
         Relation instructors = new RelationBuilder()
@@ -61,7 +61,7 @@ public class Driver {
                 .attributeTypes(
                         List.of(Type.INTEGER, Type.STRING, Type.STRING, Type.DOUBLE))
                 .build();
-        instructors.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/instructor_export.csv");
+        instructors.loadData("./project_1/src/main/java/uga/cs4370/mydbimpl/tables/instructor_export.csv");
         
         // students
         Relation students = new RelationBuilder()
@@ -69,7 +69,7 @@ public class Driver {
                 .attributeTypes(
                         List.of(Type.INTEGER, Type.STRING, Type.STRING, Type.DOUBLE))
                 .build();
-        students.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/student_export.csv");
+        students.loadData("./project_1/src/main/java/uga/cs4370/mydbimpl/tables/student_export.csv");
         
         // takes: ID, course_id, sec_id, semester, year, grade (ID can also be t_ID)
         Relation takes = new RelationBuilder()
@@ -77,7 +77,7 @@ public class Driver {
                 .attributeTypes(
                         List.of(Type.INTEGER, Type.INTEGER, Type.INTEGER, Type.STRING, Type.INTEGER, Type.STRING))
                 .build();
-        takes.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/takes_export.csv");
+        takes.loadData("./project_1/src/main/java/uga/cs4370/mydbimpl/tables/takes_export.csv");
         
         // teaches: ID, course_id, sec_id, semester, year (ID can also be s_ID
         Relation teaches = new RelationBuilder()
@@ -85,7 +85,7 @@ public class Driver {
                 .attributeTypes(
                         List.of(Type.INTEGER, Type.INTEGER, Type.INTEGER, Type.STRING, Type.INTEGER))
                 .build();
-        teaches.loadData("./project_1/submission/src/main/java/uga/cs4370/mydbimpl/tables/teaches_export.csv");
+        teaches.loadData("./project_1/src/main/java/uga/cs4370/mydbimpl/tables/teaches_export.csv");
         
         // ----------------------- Queries below here ----------------------------
         
