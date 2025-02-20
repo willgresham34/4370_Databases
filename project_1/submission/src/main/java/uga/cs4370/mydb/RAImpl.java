@@ -291,8 +291,48 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
     public Relation cartesianProduct(Relation rel1, Relation rel2) {
-        // TODO: finish
-        return rel1;
+        // System.out.println("rel1.getAttrs(): " + rel1.getAttrs()); // DEBUG(1)
+        // System.out.println("rel2.getAttrs(): " + rel2.getAttrs()); // DEBUG(2)
+
+        // throw an exception if any attribute in rel1 has a corresponding attribute in rel2
+        // for each attribute in rel1 ...
+        for (String attribute : rel1.getAttrs()) {
+            // ... if rel2 has the current working attribute from rel1 ...
+            if (rel2.hasAttr(attribute)) {
+                // ... throw exception
+                throw new IllegalArgumentException("relations " + rel1 + " and " + rel2 + " have a common attribute");
+            }
+        }
+
+        // create a new list of attributes (combinedAttr) which contains all attributes from rel1 and rel2
+        List<String> combinedAttr = new ArrayList<>(rel1.getAttrs());
+        combinedAttr.addAll(rel2.getAttrs());
+
+        // create a new list of types (combinedTypes) which contains all types from rel1 and rel2
+        List<Type> combinedTypes = new ArrayList<>(rel1.getTypes());
+        combinedTypes.addAll(rel2.getTypes());
+
+        // create a new table (combinedRel) which contains all combinedAttr and combinedTypes
+        Relation combinedRel = new RelationBuilder()
+                .attributeNames(combinedAttr)
+                .attributeTypes(combinedTypes)
+                .build();
+
+        // populate said new table (combinedRel) with all possible combinations of ...
+        for (int i = 0; i < rel1.getSize(); i++) {
+            List<Cell> rel1Row = rel1.getRow(i);
+
+            for (int j = 0; j < rel2.getSize(); j++) {
+                List<Cell> rel2Row = rel2.getRow(j);
+
+                List<Cell> combinedRow = new ArrayList<>(rel1Row);
+                combinedRow.addAll(rel2Row);
+
+                combinedRel.insert(combinedRow);
+            }
+        }
+
+        return combinedRel;
     }
 
     /**
