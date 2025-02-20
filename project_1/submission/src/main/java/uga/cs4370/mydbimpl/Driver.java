@@ -141,6 +141,29 @@ public class Driver {
 
         // System.out.println("Name/Dept of students who took any class in Civil Eng. in 2009:");
         // stu_nameMajorCivilEngCourse2009.print();
+        
+        /*
+         * Anthony's Query:
+         * Rename Computer Science's dept_name in the course table to its full form,
+         * take the cartesian product of this renamed course table and classroom.
+         */
+        
+        // create a list of all courses in the computer science department
+        Relation courseInCompSci = ra.select(course, row -> row.get(course.getAttrIndex("dept_name")).getAsString().equals("Comp. Sci."));
+        
+        // rename dept_name from "Comp. Sci." to "Computer Science"
+        Relation renamedCourseInCompSci = ra.rename(courseInCompSci, Arrays.asList("dept_name"), Arrays.asList("department_name"));
+        
+        // print before and after
+        System.out.println("original:");
+        courseInCompSci.print();
+        System.out.println("renamed:");
+        renamedCourseInCompSci.print();
+        
+        // ANTHONY: test cartesianProduct()
+        Relation cartesianProductOfRenamedCourseInCompSciAndClassroom = ra.cartesianProduct(renamedCourseInCompSci, classroom);
+        System.out.println("cartesianProductOfRenamedCourseInCompSciAndClassroom:");
+        cartesianProductOfRenamedCourseInCompSciAndClassroom.print();
     }
 
 }
