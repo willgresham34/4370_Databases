@@ -1,6 +1,6 @@
-# CSCI4370 40880 Group-3
+# CSCI4370 40880 Group_3
 
-Cole "Adam" Wright (~23.3%)
+Adam Wright (~23.3%)
 - mydb/RAImpl/select()
 - mydb/RAImpl/project()
 - mydbimpl/Driver/{query}
