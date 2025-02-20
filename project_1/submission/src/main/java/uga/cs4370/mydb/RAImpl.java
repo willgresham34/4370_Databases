@@ -37,8 +37,6 @@ public class RAImpl implements RA {
 
     }
 
-    ;
-
     /**
      * Performs the project operation on the relation rel
      * given the attributes list attrs.
@@ -105,8 +103,6 @@ public class RAImpl implements RA {
 
         return ans;
     }
-
-    ;
 
     /**
      * Performs the union operation on the relations rel1 and rel2.
@@ -176,8 +172,6 @@ public class RAImpl implements RA {
         }
         return result;
     }
-
-    ;
 
     /**
      * Performs the set difference operation on the relations rel1 and rel2.
@@ -250,8 +244,6 @@ public class RAImpl implements RA {
         return result;
     }
 
-    ;
-
     /**
      * Renames the attributes in origAttr of relation rel to corresponding
      * names in renamedAttr.
@@ -263,10 +255,51 @@ public class RAImpl implements RA {
      *                                  matching argument counts.
      */
     public Relation rename(Relation rel, List<String> origAttr, List<String> renamedAttr) {
-        return rel;
-    }
+        // throw an exception if origAttr and renamedAttr do not have the same number of strings
+        if (origAttr.size() != renamedAttr.size()) {
+            throw new IllegalArgumentException("origAttr and renamedAttr are not the same size");
+        }
 
-    ;
+        // throw an exception if any attribute in origAttr is not present within rel
+        for (String origAttrName : origAttr) {
+            if (!rel.hasAttr(origAttrName)) {
+                throw new IllegalArgumentException("origAttr " + origAttrName + " does not exist");
+            }
+        }
+
+        // create a list of attributes (newAttr) from rel
+        List<String> newAttr = new ArrayList<>(rel.getAttrs());
+        //System.out.println("newAttr:\n" + newAttr.toString()); // DEBUG
+
+        // modify said list of attributes (newAttr) to reflect the desired name change(s)
+        // for each attribute in origAttr ...
+        for (int i = 0; i < origAttr.size(); i++) {
+            // ... for each attribute in newAttr ...
+            for (int j = 0; j < newAttr.size(); j++) {
+                // ... if the current attribute in newAttr matches the current attribute in origAttr ...
+                if (newAttr.get(j).equals(origAttr.get(i))) {
+                    // ... rename the current attribute in newAttr to the name specified in renamedAttr
+                    newAttr.set(j, renamedAttr.get(i));
+                }
+            }
+        }
+        //System.out.println("newAttr:\n" + newAttr.toString()); // DEBUG
+
+        // create a new relation (newRel) which uses the new, modified list of attributes (newAttr)
+        Relation newRel = new RelationBuilder()
+                .attributeNames(newAttr)
+                .attributeTypes(rel.getTypes())
+                .build();
+        //System.out.println("newRel:"); // DEBUG(1)
+        //newRel.print(); // DEBUG(2)
+
+        // set rel to newRel
+        for (int i = 0; i < rel.getSize(); i++) {
+            newRel.insert(rel.getRow(i));
+        }
+
+        return newRel;
+    }
 
     /**
      * Performs cartesian product on relations rel1 and rel2.
@@ -276,10 +309,49 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
     public Relation cartesianProduct(Relation rel1, Relation rel2) {
-        return rel1;
-    }
+        // System.out.println("rel1.getAttrs(): " + rel1.getAttrs()); // DEBUG(1)
+        // System.out.println("rel2.getAttrs(): " + rel2.getAttrs()); // DEBUG(2)
 
-    ;
+        // throw an exception if any attribute in rel1 has a corresponding attribute in rel2
+        // for each attribute in rel1 ...
+        for (String attribute : rel1.getAttrs()) {
+            // ... if rel2 has the current working attribute from rel1 ...
+            if (rel2.hasAttr(attribute)) {
+                // ... throw exception
+                throw new IllegalArgumentException("relations " + rel1 + " and " + rel2 + " have a common attribute");
+            }
+        }
+
+        // create a new list of attributes (combinedAttr) which contains all attributes from rel1 and rel2
+        List<String> combinedAttr = new ArrayList<>(rel1.getAttrs());
+        combinedAttr.addAll(rel2.getAttrs());
+
+        // create a new list of types (combinedTypes) which contains all types from rel1 and rel2
+        List<Type> combinedTypes = new ArrayList<>(rel1.getTypes());
+        combinedTypes.addAll(rel2.getTypes());
+
+        // create a new table (combinedRel) which contains all combinedAttr and combinedTypes
+        Relation combinedRel = new RelationBuilder()
+                .attributeNames(combinedAttr)
+                .attributeTypes(combinedTypes)
+                .build();
+
+        // populate said new table (combinedRel) with all possible combinations of ...
+        for (int i = 0; i < rel1.getSize(); i++) {
+            List<Cell> rel1Row = rel1.getRow(i);
+
+            for (int j = 0; j < rel2.getSize(); j++) {
+                List<Cell> rel2Row = rel2.getRow(j);
+
+                List<Cell> combinedRow = new ArrayList<>(rel1Row);
+                combinedRow.addAll(rel2Row);
+
+                combinedRel.insert(combinedRow);
+            }
+        }
+
+        return combinedRel;
+    }
 
     /**
      * Performs natural join on relations rel1 and rel2.
@@ -423,6 +495,6 @@ public class RAImpl implements RA {
         }
 
         return result;
-    };
+    }
 
 }
