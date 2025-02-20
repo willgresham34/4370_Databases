@@ -9,7 +9,7 @@ import uga.cs4370.mydb.RelationBuilder;
 import uga.cs4370.mydb.Type;
 
 public class Driver {
-
+    
     public static void main(String[] args) {
         // Following is an example of how to use the relation class.
         // This creates a table with three columns with below mentioned
@@ -89,9 +89,7 @@ public class Driver {
         
         // ----------------------- Queries below here ----------------------------
         
-        /*
-         * Adam's Query
-         */
+        // ### Adam's Query ###
         
         // Return names of advisors who advise students majoring in math
         Relation math_students = ra.select(students, row -> row.get(students.getAttrIndex("dept_name")).getAsString().equals("Math"));
@@ -107,11 +105,29 @@ public class Driver {
         Relation inst_names = ra.project(inst_math, List.of("name"));
         inst_names.print();
         
-        /*
-         * Connor's Query:
-         * Return the name and dept_name of students who took
-         * any class in Civil Eng. in 2009.
-         */
+        // ### Anthony's Query ###
+        // Rename Computer Science's dept_name in the course table to its full form
+        // and take the cartesian product of this renamed course table and classroom.
+        
+        // create a list of all courses in the computer science department 
+        Relation courseInCompSci = ra.select(course, row -> row.get(course.getAttrIndex("dept_name")).getAsString().equals("Comp. Sci."));
+        
+        // rename dept_name from "Comp. Sci." to "Computer Science"
+        Relation renamedCourseInCompSci = ra.rename(courseInCompSci, Arrays.asList("dept_name"), Arrays.asList("department_name"));
+        
+        // print before and after
+        System.out.println("original:");
+        courseInCompSci.print();
+        System.out.println("renamed:");
+        renamedCourseInCompSci.print();
+        
+        // ANTHONY: test cartesianProduct()
+        Relation cartesianProductOfRenamedCourseInCompSciAndClassroom = ra.cartesianProduct(renamedCourseInCompSci, classroom);
+        System.out.println("cartesianProductOfRenamedCourseInCompSciAndClassroom:");
+        cartesianProductOfRenamedCourseInCompSciAndClassroom.print();
+        
+        // ### Connor's Query ###
+        // Return the name and dept_name of students who took any class in Civil Eng. in 2009
         
         // Get all Civil Eng. Courses with course id and type
         Relation civilEngCourses = ra.select(course, row -> row.get(course.getAttrIndex("dept_name")).getAsString().equals("Civil Eng."));
@@ -130,11 +146,9 @@ public class Driver {
         System.out.println("Name/Dept of students who took any class in Civil Eng. in 2009:");
         stu_nameMajorCivilEngCourse2009.print();
         
-        /*
-         * Will's First Query
-         * return the name of the advisors of students with more then 70 credit hours in
-         * get all students in cs with 70 or more credits
-         */
+        // ### Will's First Query
+        // return the name of the advisors of students with more than 70 credit hours in
+        // get all students in cs with 70 or more credits
         
         Relation csStudentsWith70 = ra.select(students, row -> row.get(students.getAttrIndex("dept_name")).getAsString().equals("Comp. Sci.") && row.get(students.getAttrIndex("tot_cred")).getAsDouble() > 70);
         
@@ -156,11 +170,8 @@ public class Driver {
         System.out.println("Advisor names of the CS students with more than 70 total credit hours");
         instNamesOfCsStudWith70.print();
         
-        /*
-         * Will's Second Query
-         * Return the names, semester and year of courses who are taught by teachers
-         * that make more than 100,000
-         */
+        // ### Will's Second Query ###
+        // Return the names, semester and year of courses who are taught by teachers that make more than 100,000
         
         // get instructors who make 100k
         Relation instr_100k = ra.select(instructors, row -> row.get(instructors.getAttrIndex("salary")).getAsDouble() > 100000);
@@ -178,29 +189,6 @@ public class Driver {
         Relation course_result = ra.project(courses_teaches, List.of("name", "semester", "year"));
         System.out.println("Name, semester, and year of courses taught by instructors whose salary is greater than 100,000");
         course_result.print();
-        
-        /*
-         * Anthony's Query:
-         * Rename Computer Science's dept_name in the course table to its full form,
-         * take the cartesian product of this renamed course table and classroom.
-         */
-        
-        // create a list of all courses in the computer science department
-        Relation courseInCompSci = ra.select(course, row -> row.get(course.getAttrIndex("dept_name")).getAsString().equals("Comp. Sci."));
-        
-        // rename dept_name from "Comp. Sci." to "Computer Science"
-        Relation renamedCourseInCompSci = ra.rename(courseInCompSci, Arrays.asList("dept_name"), Arrays.asList("department_name"));
-        
-        // print before and after
-        System.out.println("original:");
-        courseInCompSci.print();
-        System.out.println("renamed:");
-        renamedCourseInCompSci.print();
-        
-        // ANTHONY: test cartesianProduct()
-        Relation cartesianProductOfRenamedCourseInCompSciAndClassroom = ra.cartesianProduct(renamedCourseInCompSci, classroom);
-        System.out.println("cartesianProductOfRenamedCourseInCompSciAndClassroom:");
-        cartesianProductOfRenamedCourseInCompSciAndClassroom.print();
     }
 
 }
