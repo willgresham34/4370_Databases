@@ -37,8 +37,6 @@ public class RAImpl implements RA {
 
     }
 
-    ;
-
     /**
      * Performs the project operation on the relation rel
      * given the attributes list attrs.
@@ -86,8 +84,6 @@ public class RAImpl implements RA {
 
         return ans;
     }
-
-    ;
 
     /**
      * Performs the union operation on the relations rel1 and rel2.
@@ -157,7 +153,7 @@ public class RAImpl implements RA {
 
         }
         return result;
-    };
+    }
 
     /**
      * Performs the set difference operation on the relations rel1 and rel2.
@@ -228,7 +224,7 @@ public class RAImpl implements RA {
 
         }
         return result;
-    };
+    }
 
     /**
      * Renames the attributes in origAttr of relation rel to corresponding
@@ -241,10 +237,51 @@ public class RAImpl implements RA {
      *                                  matching argument counts.
      */
     public Relation rename(Relation rel, List<String> origAttr, List<String> renamedAttr) {
-        return rel;
-    }
+        // throw an exception if origAttr and renamedAttr do not have the same number of strings
+        if (origAttr.size() != renamedAttr.size()) {
+            throw new IllegalArgumentException("origAttr and renamedAttr are not the same size");
+        }
 
-    ;
+        // throw an exception if any attribute in origAttr is not present within rel
+        for (String origAttrName : origAttr) {
+            if (!rel.hasAttr(origAttrName)) {
+                throw new IllegalArgumentException("origAttr " + origAttrName + " does not exist");
+            }
+        }
+
+        // create a list of attributes (newAttr) from rel
+        List<String> newAttr = new ArrayList<>(rel.getAttrs());
+        //System.out.println("newAttr:\n" + newAttr.toString()); // DEBUG
+
+        // modify said list of attributes (newAttr) to reflect the desired name change(s)
+        // for each attribute in origAttr ...
+        for (int i = 0; i < origAttr.size(); i++) {
+            // ... for each attribute in newAttr ...
+            for (int j = 0; j < newAttr.size(); j++) {
+                // ... if the current attribute in newAttr matches the current attribute in origAttr ...
+                if (newAttr.get(j).equals(origAttr.get(i))) {
+                    // ... rename the current attribute in newAttr to the name specified in renamedAttr
+                    newAttr.set(j, renamedAttr.get(i));
+                }
+            }
+        }
+        //System.out.println("newAttr:\n" + newAttr.toString()); // DEBUG
+
+        // create a new relation (newRel) which uses the new, modified list of attributes (newAttr)
+        Relation newRel = new RelationBuilder()
+                .attributeNames(newAttr)
+                .attributeTypes(rel.getTypes())
+                .build();
+        //System.out.println("newRel:"); // DEBUG(1)
+        //newRel.print(); // DEBUG(2)
+
+        // set rel to newRel
+        for (int i = 0; i < rel.getSize(); i++) {
+            newRel.insert(rel.getRow(i));
+        }
+
+        return newRel;
+    }
 
     /**
      * Performs cartesian product on relations rel1 and rel2.
@@ -254,10 +291,9 @@ public class RAImpl implements RA {
      * @throws IllegalArgumentException if rel1 and rel2 have common attributes.
      */
     public Relation cartesianProduct(Relation rel1, Relation rel2) {
+        // TODO: finish
         return rel1;
     }
-
-    ;
 
     /**
      * Performs natural join on relations rel1 and rel2.
@@ -401,6 +437,5 @@ public class RAImpl implements RA {
 
         return result;
     }
-;
 
 }
