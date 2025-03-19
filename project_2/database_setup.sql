@@ -111,19 +111,19 @@ VALUES
 INSERT INTO
     Post
 VALUES
-    (1, 1, now (), "Hello World - Will "),
-    (2, 1, now (), "SQL is fun - Also Will"),
-    (3, 1, now (), "Hello World - Adam"),
-    (4, 1, now (), "Hello World - Connor"),
-    (5, 1, now (), " Hello World -Anthony");
+    (1, 1, "2025-03-19", "Hello World - Will "),
+    (2, 1, "2025-03-19", "SQL is fun - Also Will"),
+    (3, 1, "2025-03-19", "Hello World - Adam"),
+    (4, 1, "2025-03-19", "Hello World - Connor"),
+    (5, 1, "2025-03-19", " Hello World -Anthony");
 
 INSERT INTO
     Comment
 VALUES
-    (1, 2, 3, now (), "Cool Post - Connor"),
-    (2, 2, 2, now (), "Cool Post - Adam"),
-    (3, 3, 1, now (), "Cool Post - Will"),
-    (4, 4, 1, now (), "Cool Post - Will");
+    (1, 2, 3, "2025-03-19", "Cool Post - Connor"),
+    (2, 2, 2, "2025-03-19", "Cool Post - Adam"),
+    (3, 3, 1, "2025-03-19", "Cool Post - Will"),
+    (4, 4, 1, "2025-03-19", "Cool Post - Will");
 
 INSERT INTO
     Heart
