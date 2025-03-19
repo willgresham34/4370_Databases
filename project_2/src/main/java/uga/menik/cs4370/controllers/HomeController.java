@@ -37,10 +37,15 @@ public class HomeController {
     public ModelAndView webpage(@RequestParam(name = "error", required = false) String error) {
         // See notes on ModelAndView in BookmarksController.java.
         ModelAndView mv = new ModelAndView("home_page");
-
+        List<Post> posts = Utility.createSamplePostsListWithoutComments();
         // Following line populates sample data.
         // You should replace it with actual data from the database.
-        List<Post> posts = Utility.createSamplePostsListWithoutComments();
+        /*
+         * 
+         * Calling get post service
+         * 
+         */
+
         mv.addObject("posts", posts);
 
         // If an error occured, you can set the following property with the
