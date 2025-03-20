@@ -7,7 +7,16 @@ package uga.menik.cs4370.controllers;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.sql.DataSource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uga.menik.cs4370.models.Post;
+import uga.menik.cs4370.services.UserService;
 import uga.menik.cs4370.utility.Utility;
 
 /**
@@ -25,6 +35,13 @@ import uga.menik.cs4370.utility.Utility;
 @Controller
 @RequestMapping
 public class HomeController {
+    private final UserService userService;
+    private final DataSource dataSource;
+
+    public HomeController(UserService u, DataSource d) {
+        this.userService = u;
+        this.dataSource = d;
+    }
 
     /**
      * This is the specific function that handles the root URL itself.
@@ -72,14 +89,49 @@ public class HomeController {
     @PostMapping("/createpost")
     public String createPost(@RequestParam(name = "posttext") String postText) {
         System.out.println("User is creating post: " + postText);
+        String currentUserID = userService.getLoggedInUser().getUserId();
+        
+        final String sql = "insert into Post (userId, postText) values (?, ?)";
+        final String sql2 = "select * from Post where postText = ?";
+        final String sql3 = "insert into Hashtag (hashTag, postId) values (?, ?)";
 
-        // Redirect the user if the post creation is a success.
-        // return "redirect:/";
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2)) 
+            {
+                
+                pstmt.setString(1, currentUserID);
+                pstmt.setString(2, postText);
+                pstmt.executeUpdate();
 
-        // Redirect the user with an error message if there was an error.
-        String message = URLEncoder.encode("Failed to create the post. Please try again.",
+                pstmt2.setString(1, postText);
+                ResultSet rs = pstmt2.executeQuery();
+
+                List<String> hashtags = new ArrayList<>();
+        
+                Pattern pattern = Pattern.compile("#(\\w+)");
+                Matcher matcher = pattern.matcher(postText);
+
+                if(rs.next()) {
+                    String postID = rs.getString("postId");
+                    while (matcher.find()) {
+                        String word = matcher.group(1);
+                        PreparedStatement pstmt3 = conn.prepareStatement(sql3);
+                        pstmt3.setString(1, word);
+                        pstmt3.setString(2, postID);
+                        pstmt3.executeUpdate();
+                    }
+                }
+
+
+                return "redirect:/";
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                String message = URLEncoder.encode("Failed to create the post. Please try again.",
                 StandardCharsets.UTF_8);
-        return "redirect:/?error=" + message;
+                return "redirect:/?error=" + message;
+            }
     }
 
 }
