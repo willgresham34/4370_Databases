@@ -68,6 +68,7 @@ public class PeopleController {
     
         } catch (Exception exception) {
             String errorMessage = error;
+            System.out.println(errorMessage);
             mv.addObject("errorMessage", errorMessage);
         }
         return mv;
@@ -91,12 +92,17 @@ public class PeopleController {
         System.out.println("\tisFollow: " + isFollow);
 
         // Redirect the user if the comment adding is a success.
-        // return "redirect:/people";
-
-        // Redirect the user with an error message if there was an error.
-        String message = URLEncoder.encode("Failed to (un)follow the user. Please try again.",
-                StandardCharsets.UTF_8);
-        return "redirect:/people?error=" + message;
+        try {
+            peopleService.followUnfollowUser(userService.getLoggedInUser().getUserId(), 
+                    userId, isFollow);
+            return "redirect:/people";
+        } catch (Exception e) {
+            // Redirect the user with an error message if there was an error.
+            String message = URLEncoder.encode("Failed to (un)follow the user. Please try again.",
+            StandardCharsets.UTF_8);
+            return "redirect:/people?error=" + message;
+        }
+        
     }
 
 }
