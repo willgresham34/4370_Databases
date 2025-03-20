@@ -7,7 +7,12 @@ package uga.menik.cs4370.controllers;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uga.menik.cs4370.models.ExpandedPost;
+import uga.menik.cs4370.services.UserService;
 import uga.menik.cs4370.utility.Utility;
 
 /**
@@ -26,6 +32,15 @@ import uga.menik.cs4370.utility.Utility;
 @Controller
 @RequestMapping("/post")
 public class PostController {
+
+
+    private final UserService userService;
+    private final DataSource dataSource;
+
+    public PostController(UserService u, DataSource d) {
+        this.userService = u;
+        this.dataSource = d;
+    }
 
     /**
      * This function handles the /post/{postId} URL.
@@ -97,13 +112,32 @@ public class PostController {
         System.out.println("\tpostId: " + postId);
         System.out.println("\tisAdd: " + isAdd);
 
-        // Redirect the user if the comment adding is a success.
-        // return "redirect:/post/" + postId;
+        final String sql2 = "insert into Heart (postId, userId) values (?, ?)";
+        final String sql3 = "delete from Heart where postId = ? and userId = ?";
 
-        // Redirect the user with an error message if there was an error.
-        String message = URLEncoder.encode("Failed to (un)like the post. Please try again.",
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+            PreparedStatement pstmt3 = conn.prepareStatement(sql3)) 
+            {
+                String currentUserId = userService.getLoggedInUser().getUserId();
+                if(isAdd) {
+                    pstmt2.setString(1, postId);
+                    pstmt2.setString(2, currentUserId);
+                    pstmt2.executeUpdate();
+                } else {
+                    pstmt3.setString(1, postId);
+                    pstmt3.setString(2, currentUserId);
+                    pstmt3.executeUpdate();
+
+                }
+                return "redirect:/post/" + postId;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                String message = URLEncoder.encode("Failed to (un)like the post. Please try again.",
                 StandardCharsets.UTF_8);
-        return "redirect:/post/" + postId + "?error=" + message;
+                return "redirect:/post/" + postId + "?error=" + message;
+            }
     }
 
     /**
@@ -119,13 +153,32 @@ public class PostController {
         System.out.println("\tpostId: " + postId);
         System.out.println("\tisAdd: " + isAdd);
 
-        // Redirect the user if the comment adding is a success.
-        // return "redirect:/post/" + postId;
+        final String sql = "insert into Bookmark (postId, userId) values (?, ?)";
+        final String sql2 = "delete from Bookmark where postId = ? and userId = ?";
 
-        // Redirect the user with an error message if there was an error.
-        String message = URLEncoder.encode("Failed to (un)bookmark the post. Please try again.",
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt2 = conn.prepareStatement(sql);
+            PreparedStatement pstmt3 = conn.prepareStatement(sql2)) 
+            {
+                String currentUserId = userService.getLoggedInUser().getUserId();
+                if(isAdd) {
+                    pstmt2.setString(1, postId);
+                    pstmt2.setString(2, currentUserId);
+                    pstmt2.executeUpdate();
+                } else {
+                    pstmt3.setString(1, postId);
+                    pstmt3.setString(2, currentUserId);
+                    pstmt3.executeUpdate();
+
+                }
+                return "redirect:/post/" + postId;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                String message = URLEncoder.encode("Failed to (un)bookmark the post. Please try again.",
                 StandardCharsets.UTF_8);
-        return "redirect:/post/" + postId + "?error=" + message;
+                return "redirect:/post/" + postId + "?error=" + message;
+            }
     }
 
 }
