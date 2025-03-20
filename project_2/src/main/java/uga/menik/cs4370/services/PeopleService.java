@@ -45,7 +45,12 @@ public class PeopleService {
      */
     public List<FollowableUser> getFollowableUsers(String userIdToExclude) throws SQLException {
         // Write an SQL query to find the users that are not the current user.
-        final String sql = "select * from user where userId != ?";
+        final String sql = "select username, firstName, lastName, " +
+                           "(user.userId in (select followeeUserId from follow " +
+                           "where followerUserId = ?)) as isFollowed, lastActive " +
+                           "from user left join (select userId, max(postDate) as lastActive " +
+                           "from post group by userId) as userLastActive on " +
+                           "userLastActive.userId = user.userId where userId != ?";
         // Run the query with a datasource.
         // See UserService.java to see how to inject DataSource instance and
         // use it to run a query.
@@ -54,6 +59,7 @@ public class PeopleService {
 
             // Following line replaces the first place holder with userIdToExclude.
             pstmt.setString(1, userIdToExclude);
+            pstmt.setString(2, userIdToExclude);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 // Use the query result to create a list of followable users.
@@ -67,10 +73,14 @@ public class PeopleService {
                     String userId = rs.getString("userId");
                     String firstName = rs.getString("firstName");
                     String lastName = rs.getString("lastName");
+                    Boolean isFollowed = rs.getString("isFollowed").equals("1");
+                    String lastActiveDate = rs.getString("lastActive")==null ? 
+                            "No posts yet" : rs.getString("lastActive");
+                    
 
                     // Create followable user, isFollowed and lastActiveDate being placeholders
                     FollowableUser followableUser = new FollowableUser(userId, firstName, lastName,
-                            false, "Mar 10, 2025, 3:00 PM");
+                            isFollowed, lastActiveDate);
 
                     // Add to list
                     followableUsers.add(followableUser);
