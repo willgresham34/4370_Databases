@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uga.menik.cs4370.models.FollowableUser;
-import uga.menik.cs4370.utility.Utility;
 
 /**
  * This service contains people related functions.
@@ -45,14 +44,21 @@ public class PeopleService {
      */
     public List<FollowableUser> getFollowableUsers(String userIdToExclude) throws SQLException {
         // Write an SQL query to find the users that are not the current user.
-        final String sql = "select user.userId as userId, firstName, lastName, " +
-        "(user.userId in (select followeeUserId " +
-        "from follow where followerUserId = ?)) "  +
-        "as isFollowed, lastActive from user " +
-        "left join (select userId, max(postDate) as " +
-        "lastActive from post group by userId) " + 
-        "as userLastActive on userLastActive.userId = " + 
-        "user.userId where user.userId != ?";
+        final String sql = """
+            select 
+                user.userId as userId, firstName, lastName,
+                ( user.userId in 
+                    (select followeeUserId from follow where followerUserId = ?)
+                ) as isFollowed,
+                lastActive 
+            from 
+                user
+            left join 
+                (select userId, max(postDate) as lastActive from post group by userId)
+            as userLastActive on userLastActive.userId = user.userId 
+            where 
+                user.userId != ?;
+        """;
         
         // Run the query with a datasource.
         // See UserService.java to see how to inject DataSource instance and
@@ -64,10 +70,8 @@ public class PeopleService {
             pstmt.setString(1, userIdToExclude);
             pstmt.setString(2, userIdToExclude);
 
-            System.out.println("Executing query:");
-
             try (ResultSet rs = pstmt.executeQuery()) {
-                System.out.println(rs);
+
                 // Use the query result to create a list of followable users.
                 // See UserService.java to see how to access rows and their attributes
                 // from the query result.
@@ -76,19 +80,17 @@ public class PeopleService {
                 List<FollowableUser> followableUsers = new ArrayList<>();
                 while (rs.next()) {
 
-                    // Get attributes of next user
-                    String userId = rs.getString("userId");
-                    String firstName = rs.getString("firstName");
-                    String lastName = rs.getString("lastName");
-                    Boolean isFollowed = rs.getString("isFollowed").equals("1");
+                    // Check lastActive for null
                     String lastActiveDate = rs.getString("lastActive");
                     if (lastActiveDate == null) {lastActiveDate = "No posts yet";}
-
-                    // Create followable user, isFollowed and lastActiveDate being placeholders
-                    FollowableUser followableUser = new FollowableUser(userId, firstName, lastName,
-                            isFollowed, lastActiveDate);
-
-                    // Add to list
+                    
+                    FollowableUser followableUser = new FollowableUser(
+                        rs.getString("userId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getInt("isFollowed") == 1,
+                        lastActiveDate
+                    );
                     followableUsers.add(followableUser);
                 }
                 return followableUsers;
