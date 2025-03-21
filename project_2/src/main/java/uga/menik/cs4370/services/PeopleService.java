@@ -58,7 +58,7 @@ public class PeopleService {
                         (select userId, max(postDate) as lastActive from Post group by userId)
                     as userLastActive on userLastActive.userId = User.userId
                     where
-                        user.userId != ?;
+                        User.userId != ?;
                 """;
 
         // Run the query with a datasource.

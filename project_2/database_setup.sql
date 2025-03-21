@@ -111,19 +111,63 @@ VALUES
 INSERT INTO
     Post
 VALUES
-    (1, 1, "2025-03-19", "Hello World - Will "),
-    (2, 1, "2025-03-19", "SQL is fun - Also Will"),
-    (3, 2, "2025-03-19", "Hello World - Adam"),
-    (4, 3, "2025-03-19", "Hello World - Connor"),
-    (5, 4, "2025-03-19", " Hello World -Anthony");
+    (
+        1,
+        1,
+        "2025-03-19 10:30:00",
+        "Hello World - Will "
+    ),
+    (
+        2,
+        1,
+        "2025-03-19 10:30:00",
+        "SQL is fun - Also Will"
+    ),
+    (3, 2, "2025-03-19 10:30:00", "Hello World - Adam"),
+    (
+        4,
+        3,
+        "2025-03-19 10:30:00",
+        "Hello World - Connor"
+    ),
+    (
+        5,
+        4,
+        "2025-03-19 10:30:00",
+        " Hello World -Anthony"
+    );
 
 INSERT INTO
     Comment
 VALUES
-    (1, 2, 3, "2025-03-19", "Cool Post - Connor"),
-    (2, 2, 2, "2025-03-19", "Cool Post - Adam"),
-    (3, 3, 1, "2025-03-19", "Cool Post - Will"),
-    (4, 4, 1, "2025-03-19", "Cool Post - Will");
+    (
+        1,
+        2,
+        3,
+        "2025-03-20 11:35:00",
+        "Cool Post - Connor"
+    ),
+    (
+        2,
+        2,
+        2,
+        "2025-03-20 10:30:00",
+        "Cool Post - Adam"
+    ),
+    (
+        3,
+        3,
+        1,
+        "2025-03-21 20:30:00",
+        "Cool Post - Will"
+    ),
+    (
+        4,
+        4,
+        1,
+        "2025-03-21 14:34:00",
+        "Cool Post - Will"
+    );
 
 INSERT INTO
     Heart
