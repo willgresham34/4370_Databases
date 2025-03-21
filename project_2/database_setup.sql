@@ -27,7 +27,7 @@ CREATE TABLE
         userId INT NOT NULL,
         postDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         postText TEXT NOT NULL,
-        FOREIGN KEY (userId) REFERENCES user (userId) ON DELETE CASCADE
+        FOREIGN KEY (userId) REFERENCES User (userId) ON DELETE CASCADE
     );
 
 CREATE TABLE
@@ -37,8 +37,8 @@ CREATE TABLE
         userId INT NOT NULL,
         commentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         commentText TEXT NOT NULL,
-        FOREIGN KEY (postId) REFERENCES post (postId) ON DELETE CASCADE,
-        FOREIGN KEY (userId) REFERENCES user (userId) ON DELETE CASCADE
+        FOREIGN KEY (postId) REFERENCES Post (postId) ON DELETE CASCADE,
+        FOREIGN KEY (userId) REFERENCES User (userId) ON DELETE CASCADE
     );
 
 CREATE TABLE
@@ -46,8 +46,8 @@ CREATE TABLE
         postId INT NOT NULL,
         userId INT NOT NULL,
         PRIMARY KEY (postId, userId),
-        FOREIGN KEY (postId) REFERENCES post (postId) ON DELETE CASCADE,
-        FOREIGN KEY (userId) REFERENCES user (userId) ON DELETE CASCADE
+        FOREIGN KEY (postId) REFERENCES Post (postId) ON DELETE CASCADE,
+        FOREIGN KEY (userId) REFERENCES User (userId) ON DELETE CASCADE
     );
 
 CREATE TABLE
@@ -55,8 +55,8 @@ CREATE TABLE
         postId INT NOT NULL,
         userId INT NOT NULL,
         PRIMARY KEY (postId, userId),
-        FOREIGN KEY (postId) REFERENCES post (postId) ON DELETE CASCADE,
-        FOREIGN KEY (userId) REFERENCES user (userId) ON DELETE CASCADE
+        FOREIGN KEY (postId) REFERENCES Post (postId) ON DELETE CASCADE,
+        FOREIGN KEY (userId) REFERENCES User (userId) ON DELETE CASCADE
     );
 
 CREATE TABLE
@@ -64,7 +64,7 @@ CREATE TABLE
         hashTag VARCHAR(100) NOT NULL,
         postId INT NOT NULL,
         PRIMARY KEY (hashTag, postId),
-        FOREIGN KEY (postId) REFERENCES post (postId) ON DELETE CASCADE
+        FOREIGN KEY (postId) REFERENCES Post (postId) ON DELETE CASCADE
     );
 
 CREATE TABLE
@@ -72,8 +72,8 @@ CREATE TABLE
         followerUserId INT NOT NULL,
         followeeUserId INT NOT NULL,
         PRIMARY KEY (followerUserId, followeeUserId),
-        FOREIGN KEY (followerUserId) REFERENCES user (userId) ON DELETE CASCADE,
-        FOREIGN KEY (followeeUserId) REFERENCES user (userId) ON DELETE CASCADE
+        FOREIGN KEY (followerUserId) REFERENCES User (userId) ON DELETE CASCADE,
+        FOREIGN KEY (followeeUserId) REFERENCES User (userId) ON DELETE CASCADE
     );
 
 INSERT INTO
@@ -113,9 +113,9 @@ INSERT INTO
 VALUES
     (1, 1, "2025-03-19", "Hello World - Will "),
     (2, 1, "2025-03-19", "SQL is fun - Also Will"),
-    (3, 1, "2025-03-19", "Hello World - Adam"),
-    (4, 1, "2025-03-19", "Hello World - Connor"),
-    (5, 1, "2025-03-19", " Hello World -Anthony");
+    (3, 2, "2025-03-19", "Hello World - Adam"),
+    (4, 3, "2025-03-19", "Hello World - Connor"),
+    (5, 4, "2025-03-19", " Hello World -Anthony");
 
 INSERT INTO
     Comment
