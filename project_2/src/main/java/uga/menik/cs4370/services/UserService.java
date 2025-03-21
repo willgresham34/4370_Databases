@@ -97,6 +97,11 @@ public class UserService {
      * Checks if a user is currently authenticated.
      */
     public boolean isAuthenticated() {
+        if (loggedInUser != null) {
+            System.out.println("User is Authed");
+        } else {
+            System.out.println("User is NOT Authed");
+        }
         return loggedInUser != null;
     }
 

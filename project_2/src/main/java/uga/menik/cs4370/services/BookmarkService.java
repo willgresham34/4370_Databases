@@ -27,27 +27,28 @@ public class BookmarkService {
     }
 
     /**
-     * This function should query and return all bookmarked posts from the user (specified by userId).
+     * This function should query and return all bookmarked posts from the user
+     * (specified by userId).
      * The list is ordered by most recent first.
      */
     public List<Post> getBookmarkedPosts(String userId) throws SQLException {
 
         final String sql = """
-            select 
-                post.postId as postId, postText, postDate,
-                user.userId as userId, firstName, lastName,
-                (select count(*) from Heart h where h.postId = post.postId) as heartsCount,
-                (select count(*) from Comment c where c.postId = post.postId) as commentsCount,
-                (post.postId in (select heart.postId from heart where userId = ?)) as isHearted,
-                (post.postId in (select bookmark.postId from bookmark where userId = ?)) as isBookmarked
-            from 
-                post, bookmark, user
-            where 
-                user.userId = post.userId and
-                post.postId = bookmark.postId and
-                user.userId = ?
-            order by post.postDate desc;
-        """;
+                    select
+                        Post.postId as postId, postText, postDate,
+                        User.userId as userId, firstName, lastName,
+                        (select count(*) from Heart h where h.postId = Post.postId) as heartsCount,
+                        (select count(*) from Comment c where c.postId = Post.postId) as commentsCount,
+                        (Post.postId in (select Heart.postId from Heart where userId = ?)) as isHearted,
+                        (Post.postId in (select Bookmark.postId from Bookmark where userId = ?)) as isBookmarked
+                    from
+                        Post, Bookmark, User
+                    where
+                        User.userId = Post.userId and
+                        Post.postId = Bookmark.postId and
+                        User.userId = ?
+                    order by post.postDate desc;
+                """;
 
         // Run the query with a datasource.
         // See UserService.java to see how to inject DataSource instance and
@@ -63,27 +64,25 @@ public class BookmarkService {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 List<Post> bookmarkedPosts = new ArrayList<>();
-                
+
                 while (rs.next()) {
 
                     // Create user for post
                     User user = new User(
-                        rs.getString("userId"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName")
-                    );
-                    
+                            rs.getString("userId"),
+                            rs.getString("firstName"),
+                            rs.getString("lastName"));
+
                     // Create post
                     Post post = new Post(
-                        rs.getString("postId"),
-                        rs.getString("postText"),
-                        rs.getString("postDate"),
-                        user,
-                        rs.getInt("heartsCount"),
-                        rs.getInt("commentsCount"),
-                        rs.getInt("isHearted") == 1,
-                        rs.getInt("isBookmarked") == 1
-                    );
+                            rs.getString("postId"),
+                            rs.getString("postText"),
+                            rs.getString("postDate"),
+                            user,
+                            rs.getInt("heartsCount"),
+                            rs.getInt("commentsCount"),
+                            rs.getInt("isHearted") == 1,
+                            rs.getInt("isBookmarked") == 1);
                     bookmarkedPosts.add(post);
                 }
                 return bookmarkedPosts;
