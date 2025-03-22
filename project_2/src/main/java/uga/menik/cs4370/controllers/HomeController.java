@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uga.menik.cs4370.models.Post;
+import uga.menik.cs4370.services.PostService;
 import uga.menik.cs4370.services.UserService;
 import uga.menik.cs4370.utility.Utility;
 
@@ -36,10 +37,12 @@ import uga.menik.cs4370.utility.Utility;
 @RequestMapping
 public class HomeController {
     private final UserService userService;
+    private final PostService postService;
     private final DataSource dataSource;
 
-    public HomeController(UserService u, DataSource d) {
+    public HomeController(UserService u, PostService p, DataSource d) {
         this.userService = u;
+        this.postService = p;
         this.dataSource = d;
     }
 
@@ -54,26 +57,22 @@ public class HomeController {
     public ModelAndView webpage(@RequestParam(name = "error", required = false) String error) {
         // See notes on ModelAndView in BookmarksController.java.
         ModelAndView mv = new ModelAndView("home_page");
-        List<Post> posts = Utility.createSamplePostsListWithoutComments();
+
         // Following line populates sample data.
         // You should replace it with actual data from the database.
-        /*
-         * 
-         * Calling get post service
-         * 
-         */
+        List<Post> posts = postService.getFollowedUsersPosts(userService.getLoggedInUser().getUserId());
 
-        mv.addObject("posts", posts);
+        if (posts.size() > 0) {
+            mv.addObject("posts", posts);
+        } else {
+            mv.addObject("isNoContent", true);
+        }
 
         // If an error occured, you can set the following property with the
         // error message to show the error message to the user.
         // An error message can be optionally specified with a url query parameter too.
         String errorMessage = error;
         mv.addObject("errorMessage", errorMessage);
-
-        // Enable the following line if you want to show no content message.
-        // Do that if your content list is empty.
-        // mv.addObject("isNoContent", true);
 
         return mv;
     }
@@ -90,48 +89,46 @@ public class HomeController {
     public String createPost(@RequestParam(name = "posttext") String postText) {
         System.out.println("User is creating post: " + postText);
         String currentUserID = userService.getLoggedInUser().getUserId();
-        
+
         final String sql = "insert into Post (userId, postText) values (?, ?)";
         final String sql2 = "select * from Post where postText = ?";
         final String sql3 = "insert into Hashtag (hashTag, postId) values (?, ?)";
 
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            PreparedStatement pstmt2 = conn.prepareStatement(sql2)) 
-            {
-                
-                pstmt.setString(1, currentUserID);
-                pstmt.setString(2, postText);
-                pstmt.executeUpdate();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
 
-                pstmt2.setString(1, postText);
-                ResultSet rs = pstmt2.executeQuery();
+            pstmt.setString(1, currentUserID);
+            pstmt.setString(2, postText);
+            pstmt.executeUpdate();
 
-                List<String> hashtags = new ArrayList<>();
-        
-                Pattern pattern = Pattern.compile("#(\\w+)");
-                Matcher matcher = pattern.matcher(postText);
+            pstmt2.setString(1, postText);
+            ResultSet rs = pstmt2.executeQuery();
 
-                if(rs.next()) {
-                    String postID = rs.getString("postId");
-                    while (matcher.find()) {
-                        String word = matcher.group(1);
-                        PreparedStatement pstmt3 = conn.prepareStatement(sql3);
-                        pstmt3.setString(1, word);
-                        pstmt3.setString(2, postID);
-                        pstmt3.executeUpdate();
-                    }
+            List<String> hashtags = new ArrayList<>();
+
+            Pattern pattern = Pattern.compile("#(\\w+)");
+            Matcher matcher = pattern.matcher(postText);
+
+            if (rs.next()) {
+                String postID = rs.getString("postId");
+                while (matcher.find()) {
+                    String word = matcher.group(1);
+                    PreparedStatement pstmt3 = conn.prepareStatement(sql3);
+                    pstmt3.setString(1, word);
+                    pstmt3.setString(2, postID);
+                    pstmt3.executeUpdate();
                 }
-
-
-                return "redirect:/";
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                String message = URLEncoder.encode("Failed to create the post. Please try again.",
-                StandardCharsets.UTF_8);
-                return "redirect:/?error=" + message;
             }
+
+            return "redirect:/";
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            String message = URLEncoder.encode("Failed to create the post. Please try again.",
+                    StandardCharsets.UTF_8);
+            return "redirect:/?error=" + message;
+        }
     }
 
 }
