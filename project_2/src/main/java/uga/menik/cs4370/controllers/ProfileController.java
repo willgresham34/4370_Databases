@@ -67,17 +67,15 @@ public class ProfileController {
         // Following line populates sample data.
         // You should replace it with actual data from the database.
         List<Post> posts = postService.getPostByUserId(userId);
-        mv.addObject("posts", posts);
-
-        // If an error occured, you can set the following property with the
-        // error message to show the error message to the user.
-        // String errorMessage = "Some error occured!";
-        // mv.addObject("errorMessage", errorMessage);
-
-        // Enable the following line if you want to show no content message.
-        // Do that if your content list is empty.
-        // mv.addObject("isNoContent", true);
-
+        try {
+            if (posts.size() > 0) {
+                mv.addObject("posts", posts);
+            } else {
+                mv.addObject("isNoContent", true);
+            }
+        } catch (Exception e) {
+            mv.addObject("errorMessage", e.toString());
+        }
         return mv;
     }
 

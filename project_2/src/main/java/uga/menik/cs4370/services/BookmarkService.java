@@ -35,7 +35,7 @@ public class BookmarkService {
 
         final String sql = """
                     select
-                        Post.postId as postId, postText, postDate,
+                        Post.postId as postId, Post.postText, postDate,
                         User.userId as userId, firstName, lastName,
                         (select count(*) from Heart h where h.postId = Post.postId) as heartsCount,
                         (select count(*) from Comment c where c.postId = Post.postId) as commentsCount,
@@ -47,7 +47,7 @@ public class BookmarkService {
                         User.userId = Post.userId and
                         Post.postId = Bookmark.postId and
                         User.userId = ?
-                    order by post.postDate desc;
+                    order by Post.postDate desc;
                 """;
 
         // Run the query with a datasource.
@@ -65,8 +65,9 @@ public class BookmarkService {
 
                 List<Post> bookmarkedPosts = new ArrayList<>();
 
+                int x = 0;
                 while (rs.next()) {
-
+                    System.out.println("Row: " + x);
                     // Create user for post
                     User user = new User(
                             rs.getString("userId"),
