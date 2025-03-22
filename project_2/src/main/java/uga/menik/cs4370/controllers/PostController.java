@@ -206,6 +206,7 @@ public class PostController {
     }
 
     public List <ExpandedPost> constructExpandedPost(String postId) {
+        //IMPLEMENTATION ONLY. NEEDS TESTING
         String currentUserId = userService.getLoggedInUser().getUserId();
         final String sql = "select * from Post where postId = ?";
         final String sql2 = "select * from Comment where postId = ? order by commentDate DESC";
