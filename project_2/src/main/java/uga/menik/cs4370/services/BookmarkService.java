@@ -65,9 +65,8 @@ public class BookmarkService {
 
                 List<Post> bookmarkedPosts = new ArrayList<>();
 
-                int x = 0;
                 while (rs.next()) {
-                    System.out.println("Row: " + x);
+
                     // Create user for post
                     User user = new User(
                             rs.getString("userId"),
