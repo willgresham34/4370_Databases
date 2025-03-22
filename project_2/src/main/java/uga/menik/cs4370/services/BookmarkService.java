@@ -46,7 +46,7 @@ public class BookmarkService {
                     where
                         User.userId = Post.userId and
                         Post.postId = Bookmark.postId and
-                        User.userId = ?
+                        Bookmark.userId = ?
                     order by Post.postDate desc;
                 """;
 
