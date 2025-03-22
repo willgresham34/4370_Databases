@@ -9,7 +9,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -22,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import uga.menik.cs4370.models.Comment;
 import uga.menik.cs4370.models.ExpandedPost;
+import uga.menik.cs4370.models.User;
 import uga.menik.cs4370.services.UserService;
 import uga.menik.cs4370.utility.Utility;
 
@@ -86,17 +90,37 @@ public class PostController {
     @PostMapping("/{postId}/comment")
     public String postComment(@PathVariable("postId") String postId,
             @RequestParam(name = "comment") String comment) {
+                //NEEDS TESTING. IMPLEMENTATION ONLY
         System.out.println("The user is attempting add a comment:");
         System.out.println("\tpostId: " + postId);
         System.out.println("\tcomment: " + comment);
 
+        String currentUserId = userService.getLoggedInUser().getUserId();
+        final String sql = "insert into Comment (postId, userId, commentText) values (?, ?, ?)";
+
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql))
+            {
+                pstmt.setString(1, postId);
+                pstmt.setString(2, currentUserId);
+                pstmt.setString(3, comment);
+                pstmt.executeUpdate();
+
+                return "redirect:/post/" + postId;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                String message = URLEncoder.encode("Failed to post the comment. Please try again.",
+                StandardCharsets.UTF_8);
+                return "redirect:/post/" + postId + "?error=" + message;
+
+            }
+
         // Redirect the user if the comment adding is a success.
-        // return "redirect:/post/" + postId;
+        
 
         // Redirect the user with an error message if there was an error.
-        String message = URLEncoder.encode("Failed to post the comment. Please try again.",
-                StandardCharsets.UTF_8);
-        return "redirect:/post/" + postId + "?error=" + message;
+        
     }
 
     /**
@@ -178,6 +202,100 @@ public class PostController {
                 String message = URLEncoder.encode("Failed to (un)bookmark the post. Please try again.",
                 StandardCharsets.UTF_8);
                 return "redirect:/post/" + postId + "?error=" + message;
+            }
+    }
+
+    public List <ExpandedPost> constructExpandedPost(String postId) {
+        String currentUserId = userService.getLoggedInUser().getUserId();
+        final String sql = "select * from Post where postId = ?";
+        final String sql2 = "select * from Comment where postId = ? order by commentDate DESC";
+        final String sql3 = "select * from User where userId = ?";
+        final String sql4 = "select * from Heart where postId = ?";
+        final String sql5 = "select * from Bookmark where postId = ?";
+
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+            PreparedStatement pstmt3 = conn.prepareStatement(sql3);
+            PreparedStatement pstmt4 = conn.prepareStatement(sql4);
+            PreparedStatement pstmt5 = conn.prepareStatement(sql5);
+            )
+            {
+                pstmt.setString(1, postId);
+                ResultSet rs1 = pstmt.executeQuery();
+                rs1.next();
+                String postUserId = rs1.getString("userId");
+                
+
+                pstmt2.setString(1, postId);
+                ResultSet rs2 = pstmt2.executeQuery();
+
+                pstmt3.setString(1, postUserId);
+                ResultSet rs3 = pstmt3.executeQuery();
+                rs3.next();     
+
+                //postId found
+                String postText = rs1.getString("postText");
+                String postDate = rs1.getString("postDate");
+
+                //define user for expanded post
+                User postUser = new User(postUserId, rs3.getString("firstName"), rs3.getString("lastName"));
+
+                int heartsCount = 0;
+                boolean isHearted = false;
+                pstmt4.setString(1, postId);
+                ResultSet rs4 = pstmt.executeQuery(); 
+                while(rs4.next()) {
+                    heartsCount++;
+                    if(currentUserId.equals(rs4.getString("userId"))) {
+                        isHearted = true;
+                    }
+                }
+                //find size, check if hearted
+                int commentsSize = 0;
+                if (rs2.last()) { 
+                    commentsSize = rs2.getRow(); 
+                    rs2.beforeFirst(); 
+                }
+                //check if bookmarked
+                boolean isBookmarked = false;
+                pstmt5.setString(1, postId);
+                ResultSet rs5 = pstmt5.executeQuery();
+
+                while(rs5.next()) {
+                    if(currentUserId.equals(rs5.getString("userId"))) {
+                        isBookmarked = true;
+                    }
+                }
+
+                //create list of comments
+                List<Comment> commentsForPost = new ArrayList<>();
+
+                while(rs2.next()) {
+                    //Fetch user info for current comment
+                    PreparedStatement pstmt6 = conn.prepareStatement(sql3);
+                    pstmt6.setString(1, rs2.getString("userId"));
+                    ResultSet set = pstmt6.executeQuery();
+                    set.next();
+
+                    User commentUser = new User(set.getString("userId"), set.getString("firstName"),
+                         set.getString("lastName"));
+
+                    
+                    Comment temp = new Comment(postId, rs2.getString("commentText"), 
+                        rs2.getString("commentDate"), commentUser);
+                    commentsForPost.add(temp);
+                }
+
+                ExpandedPost postWithComments = new ExpandedPost(postId, postText, postDate, 
+                    postUser, heartsCount, commentsSize, isHearted, isBookmarked, commentsForPost);
+                
+                return List.of(postWithComments);
+
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return null;
             }
     }
 
