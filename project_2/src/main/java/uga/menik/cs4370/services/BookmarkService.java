@@ -35,7 +35,7 @@ public class BookmarkService {
 
         final String sql = """
                     select
-                        Post.postId as postId, Post.postText, postDate,
+                        Post.postId as postId, postText, postDate,
                         User.userId as userId, firstName, lastName,
                         (select count(*) from Heart h where h.postId = Post.postId) as heartsCount,
                         (select count(*) from Comment c where c.postId = Post.postId) as commentsCount,
