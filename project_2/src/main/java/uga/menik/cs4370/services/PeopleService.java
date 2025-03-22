@@ -39,27 +39,28 @@ public class PeopleService {
     }
 
     /**
-     * This function should query and return all users that are followable. The list should not
+     * This function should query and return all users that are followable. The list
+     * should not
      * contain the user with id userIdToExclude.
      */
     public List<FollowableUser> getFollowableUsers(String userIdToExclude) throws SQLException {
         // Write an SQL query to find the users that are not the current user.
         final String sql = """
-            select 
-                user.userId as userId, firstName, lastName,
-                ( user.userId in 
-                    (select followeeUserId from follow where followerUserId = ?)
-                ) as isFollowed,
-                lastActive 
-            from 
-                user
-            left join 
-                (select userId, max(postDate) as lastActive from post group by userId)
-            as userLastActive on userLastActive.userId = user.userId 
-            where 
-                user.userId != ?;
-        """;
-        
+                    select
+                        User.userId as userId, firstName, lastName,
+                        ( User.userId in
+                            (select followeeUserId from Follow where followerUserId = ?)
+                        ) as isFollowed,
+                        lastActive
+                    from
+                        User
+                    left join
+                        (select userId, max(postDate) as lastActive from Post group by userId)
+                    as userLastActive on userLastActive.userId = User.userId
+                    where
+                        User.userId != ?;
+                """;
+
         // Run the query with a datasource.
         // See UserService.java to see how to inject DataSource instance and
         // use it to run a query.
@@ -82,15 +83,16 @@ public class PeopleService {
 
                     // Check lastActive for null
                     String lastActiveDate = rs.getString("lastActive");
-                    if (lastActiveDate == null) {lastActiveDate = "No posts yet";}
-                    
+                    if (lastActiveDate == null) {
+                        lastActiveDate = "No posts yet";
+                    }
+
                     FollowableUser followableUser = new FollowableUser(
-                        rs.getString("userId"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName"),
-                        rs.getInt("isFollowed") == 1,
-                        lastActiveDate
-                    );
+                            rs.getString("userId"),
+                            rs.getString("firstName"),
+                            rs.getString("lastName"),
+                            rs.getInt("isFollowed") == 1,
+                            lastActiveDate);
                     followableUsers.add(followableUser);
                 }
                 return followableUsers;
@@ -104,14 +106,11 @@ public class PeopleService {
     public Boolean followUnfollowUser(String followerUserId, String followeeUserId,
             Boolean isFollow) throws SQLException {
 
-        final String sqlFollow =
-                "insert into Follow (followerUserId, followeeUserId) values (?, ?)";
-        final String sqlUnfollow =
-                "delete from Follow where followerUserId = ? and followeeUserId = ?";
+        final String sqlFollow = "insert into Follow (followerUserId, followeeUserId) values (?, ?)";
+        final String sqlUnfollow = "delete from Follow where followerUserId = ? and followeeUserId = ?";
 
         try (Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt =
-                        conn.prepareStatement(isFollow ? sqlFollow : sqlUnfollow)) {
+                PreparedStatement pstmt = conn.prepareStatement(isFollow ? sqlFollow : sqlUnfollow)) {
 
             pstmt.setString(1, followerUserId);
             pstmt.setString(2, followeeUserId);
