@@ -7,16 +7,7 @@ package uga.menik.cs4370.controllers;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.sql.DataSource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 import uga.menik.cs4370.models.Post;
 import uga.menik.cs4370.services.PostService;
 import uga.menik.cs4370.services.UserService;
-import uga.menik.cs4370.utility.Utility;
 
 /**
  * This controller handles the home page and some of it's sub URLs.
@@ -38,12 +28,10 @@ import uga.menik.cs4370.utility.Utility;
 public class HomeController {
     private final UserService userService;
     private final PostService postService;
-    private final DataSource dataSource;
 
-    public HomeController(UserService u, PostService p, DataSource d) {
+    public HomeController(UserService u, PostService p) {
         this.userService = u;
         this.postService = p;
-        this.dataSource = d;
     }
 
     /**
@@ -77,7 +65,7 @@ public class HomeController {
         return mv;
     }
 
-    /**
+     /**
      * This function handles the /createpost URL.
      * This handles a post request that is going to be a form submission.
      * The form for this can be found in the home page. The form has a
@@ -88,47 +76,15 @@ public class HomeController {
     @PostMapping("/createpost")
     public String createPost(@RequestParam(name = "posttext") String postText) {
         System.out.println("User is creating post: " + postText);
-        String currentUserID = userService.getLoggedInUser().getUserId();
 
-        final String sql = "insert into Post (userId, postText) values (?, ?)";
-        final String sql2 = "select * from Post where postText = ?";
-        final String sql3 = "insert into Hashtag (hashTag, postId) values (?, ?)";
+        boolean result = postService.postToDatabase(postText);
 
-        try (Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
-
-            pstmt.setString(1, currentUserID);
-            pstmt.setString(2, postText);
-            pstmt.executeUpdate();
-
-            pstmt2.setString(1, postText);
-            ResultSet rs = pstmt2.executeQuery();
-
-            List<String> hashtags = new ArrayList<>();
-
-            Pattern pattern = Pattern.compile("#(\\w+)");
-            Matcher matcher = pattern.matcher(postText);
-
-            if (rs.next()) {
-                String postID = rs.getString("postId");
-                while (matcher.find()) {
-                    String word = matcher.group(1);
-                    PreparedStatement pstmt3 = conn.prepareStatement(sql3);
-                    pstmt3.setString(1, word);
-                    pstmt3.setString(2, postID);
-                    pstmt3.executeUpdate();
-                }
-            }
-
+        if(result) {
             return "redirect:/";
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } else {
             String message = URLEncoder.encode("Failed to create the post. Please try again.",
                     StandardCharsets.UTF_8);
             return "redirect:/?error=" + message;
-        }
+        }    
     }
-
 }

@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
@@ -172,7 +174,6 @@ public class PostService {
                 while(rs4.next()) {
                     heartsCount++;
                     if(currentUserId.equals(rs4.getString("userId"))) {
-                        System.out.println("Heart found");
                         isHearted = true;
                     }
                 }
@@ -225,5 +226,122 @@ public class PostService {
                 StandardCharsets.UTF_8);
                 return null;
             }
+    }
+
+    public Boolean commentToDatabase(String postId, String comment) {
+        //Fetch current user, create sql statement
+        String currentUserId = userService.getLoggedInUser().getUserId();
+        final String sql = "insert into Comment (postId, userId, commentText) values (?, ?, ?)";
+        
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql))
+            {
+                pstmt.setString(1, postId);
+                pstmt.setString(2, currentUserId);
+                pstmt.setString(3, comment);
+                pstmt.executeUpdate();
+
+                return true;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+    }
+
+    public Boolean bookmarkToDatabase(String postId, Boolean isAdd) {
+
+        final String sql = "insert into Bookmark (postId, userId) values (?, ?)";
+        final String sql2 = "delete from Bookmark where postId = ? and userId = ?";
+
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt2 = conn.prepareStatement(sql);
+            PreparedStatement pstmt3 = conn.prepareStatement(sql2)) 
+            {
+                String currentUserId = userService.getLoggedInUser().getUserId();
+                if(isAdd) {
+                    pstmt2.setString(1, postId);
+                    pstmt2.setString(2, currentUserId);
+                    pstmt2.executeUpdate();
+                } else {
+                    pstmt3.setString(1, postId);
+                    pstmt3.setString(2, currentUserId);
+                    pstmt3.executeUpdate();
+
+                }
+                return true;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+                
+            }
+    }
+
+    public Boolean heartToDatabase(String postId, Boolean isAdd) {
+        final String sql2 = "insert into Heart (postId, userId) values (?, ?)";
+        final String sql3 = "delete from Heart where postId = ? and userId = ?";
+
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+            PreparedStatement pstmt3 = conn.prepareStatement(sql3)) 
+            {
+                String currentUserId = userService.getLoggedInUser().getUserId();
+                if(isAdd) {
+                    pstmt2.setString(1, postId);
+                    pstmt2.setString(2, currentUserId);
+                    pstmt2.executeUpdate();
+                } else {
+                    pstmt3.setString(1, postId);
+                    pstmt3.setString(2, currentUserId);
+                    pstmt3.executeUpdate();
+
+                }
+
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false; 
+            }
+    }
+
+    public boolean postToDatabase(String postText) {
+        final String sql = "insert into Post (userId, postText) values (?, ?)";
+        final String sql2 = "select * from Post where postText = ?";
+        final String sql3 = "insert into Hashtag (hashTag, postId) values (?, ?)";
+        String currentUserID = userService.getLoggedInUser().getUserId();
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+
+            pstmt.setString(1, currentUserID);
+            pstmt.setString(2, postText);
+            pstmt.executeUpdate();
+
+            pstmt2.setString(1, postText);
+            ResultSet rs = pstmt2.executeQuery();
+
+            List<String> hashtags = new ArrayList<>();
+
+            Pattern pattern = Pattern.compile("#(\\w+)");
+            Matcher matcher = pattern.matcher(postText);
+
+            if (rs.next()) {
+                String postID = rs.getString("postId");
+                while (matcher.find()) {
+                    String word = matcher.group(1);
+                    PreparedStatement pstmt3 = conn.prepareStatement(sql3);
+                    pstmt3.setString(1, word);
+                    pstmt3.setString(2, postID);
+                    pstmt3.executeUpdate();
+                }
+            }
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 };
