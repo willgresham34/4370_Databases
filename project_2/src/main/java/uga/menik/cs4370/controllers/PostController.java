@@ -9,8 +9,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +32,7 @@ public class PostController {
     private final UserService userService;
     private final PostService postService;
 
-    public PostController(UserService u, DataSource d, PostService p) {
+    public PostController(UserService u, PostService p) {
         this.userService = u;
         this.postService = p;
     }
