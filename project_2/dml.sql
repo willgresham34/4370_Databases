@@ -154,3 +154,95 @@ WHERE
     AND h.hashTag IN (?)
 ORDER BY
     p.postDate DESC;
+
+-- People page query
+select
+    User.userId as userId, 
+    firstName, 
+    lastName,
+    (
+        User.userId in
+        (
+            select 
+                followeeUserId
+            from 
+                Follow 
+            where 
+                followerUserId = ?)
+    ) as isFollowed,
+    lastActive
+from
+    User
+left join
+    (
+        select 
+            userId, 
+            max(postDate) as lastActive 
+        from 
+            Post 
+        group by 
+            userId
+    ) as userLastActive 
+on 
+    userLastActive.userId = User.userId
+where
+    User.userId != ?;
+
+-- Bookmarked posts query
+select
+    Post.postId as postId, 
+    postText, 
+    postDate,
+    User.userId as userId, 
+    firstName, 
+    lastName,
+    -- find the heart count for each post
+    (
+        select 
+            count(*) 
+        from 
+            Heart h 
+        where 
+            h.postId = Post.postId
+    ) as heartsCount,
+    
+    (
+        select 
+            count(*) 
+        from 
+            Comment c 
+        where 
+            c.postId = Post.postId
+    ) as commentsCount,
+    (
+        Post.postId in 
+        (
+            select 
+                Heart.postId 
+            from 
+                Heart 
+            where 
+                userId = ?
+        )
+    ) as isHearted,
+    (
+        Post.postId in 
+            (
+                select 
+                    Bookmark.postId 
+                from 
+                    Bookmark 
+                where 
+                    userId = ?
+            )
+    ) as isBookmarked
+    from
+        Post, 
+        Bookmark, 
+        User
+    where
+        User.userId = Post.userId and
+        Post.postId = Bookmark.postId and
+        Bookmark.userId = ?
+    order by 
+        Post.postDate desc;
