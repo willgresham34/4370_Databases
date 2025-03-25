@@ -1,4 +1,7 @@
--- homepage get followUsers
+/*This query combines data from the User, Post and Follow table to return a list
+of posts from the users the logged in user follows. It also uses data from Bookmark
+and Hear table to tell if the post is liked or bookmarked by the user
+It is used at http://localhost:8081/ aka the home page */
 SELECT
     p.postId,
     p.postText,
@@ -51,7 +54,10 @@ WHERE
 ORDER BY
     p.postDate DESC;
 
--- Profile page
+/* This query combines data from the User and Post table to return the list
+of posts from the logged in user . It also uses data from Bookmark
+and Hear table to tell if the post is liked or bookmarked by the user
+It is used at http://localhost:8081/profile aka the profile page */
 SELECT
     p.postId,
     p.postText,
@@ -102,7 +108,10 @@ WHERE
 ORDER BY
     p.postDate DESC;
 
--- Hashtag search 
+/*This query combines data from the User, Post and Hashtag table to return a list
+of posts that contain one of the searched hashtags. It also uses data from Bookmark
+and Hear table to tell if the post is liked or bookmarked by the user
+It is used at http://localhost:8081/ aka the home page */
 SELECT DISTINCT
     p.postId,
     p.postText,
