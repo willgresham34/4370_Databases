@@ -5,8 +5,10 @@ This is a project developed by Dr. Menik to give the students an opportunity to 
 */
 package uga.menik.cs4370.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uga.menik.cs4370.models.Post;
+import uga.menik.cs4370.services.PostService;
+import uga.menik.cs4370.services.UserService;
 import uga.menik.cs4370.utility.Utility;
 
 /**
@@ -23,6 +27,15 @@ import uga.menik.cs4370.utility.Utility;
 @Controller
 @RequestMapping("/hashtagsearch")
 public class HashtagSearchController {
+
+    private final UserService userService;
+    private final PostService postService;
+
+    @Autowired
+    public HashtagSearchController(UserService userService, PostService postService) {
+        this.userService = userService;
+        this.postService = postService;
+    }
 
     /**
      * This function handles the /hashtagsearch URL itself.
@@ -40,7 +53,9 @@ public class HashtagSearchController {
 
         // Following line populates sample data.
         // You should replace it with actual data from the database.
-        List<Post> posts = Utility.createSamplePostsListWithoutComments();
+        String loggedInUser = userService.getLoggedInUser().getUserId();
+
+        List<Post> posts = postService.searchPostByHashtags(hashtags.replace("#", ""), loggedInUser);
         mv.addObject("posts", posts);
 
         // If an error occured, you can set the following property with the
@@ -51,8 +66,8 @@ public class HashtagSearchController {
         // Enable the following line if you want to show no content message.
         // Do that if your content list is empty.
         // mv.addObject("isNoContent", true);
-        
+
         return mv;
     }
-    
+
 }
