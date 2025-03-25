@@ -164,7 +164,12 @@ WHERE
 ORDER BY
     p.postDate DESC;
 
--- People page query
+/*
+  This query uses data from the User table to return a list containing all
+  users on the site. It also uses data from Follow and Post table to tell 
+  if the user is followed by the current logged in user
+  It is used at http://localhost:8081/people aka the people page 
+*/
 select
     User.userId as userId, 
     firstName, 
@@ -197,7 +202,14 @@ on
 where
     User.userId != ?;
 
--- Bookmarked posts query
+/*
+  This query combines data from the User, Post, and Bookmark table to 
+  return a list containing all posts bookmarked by the current user. 
+  It also uses data from Comment, Heart, and Bookmark table to tell 
+  the hearts and comments count, as well as if the post is bookmarked
+  and hearted by the current logged in user.
+  It is used at http://localhost:8081/bookmarks aka the bookmarks page
+*/
 select
     Post.postId as postId, 
     postText, 
