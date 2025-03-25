@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uga.menik.cs4370.models.Post;
-import uga.menik.cs4370.utility.Utility;
+import uga.menik.cs4370.services.PostService;
+import uga.menik.cs4370.services.UserService;
 
 /**
  * This controller handles the home page and some of it's sub URLs.
@@ -25,6 +26,13 @@ import uga.menik.cs4370.utility.Utility;
 @Controller
 @RequestMapping
 public class HomeController {
+    private final UserService userService;
+    private final PostService postService;
+
+    public HomeController(UserService u, PostService p) {
+        this.userService = u;
+        this.postService = p;
+    }
 
     /**
      * This is the specific function that handles the root URL itself.
@@ -40,8 +48,13 @@ public class HomeController {
 
         // Following line populates sample data.
         // You should replace it with actual data from the database.
-        List<Post> posts = Utility.createSamplePostsListWithoutComments();
-        mv.addObject("posts", posts);
+        List<Post> posts = postService.getFollowedUsersPosts(userService.getLoggedInUser().getUserId());
+
+        if (posts.size() > 0) {
+            mv.addObject("posts", posts);
+        } else {
+            mv.addObject("isNoContent", true);
+        }
 
         // If an error occured, you can set the following property with the
         // error message to show the error message to the user.
@@ -49,14 +62,10 @@ public class HomeController {
         String errorMessage = error;
         mv.addObject("errorMessage", errorMessage);
 
-        // Enable the following line if you want to show no content message.
-        // Do that if your content list is empty.
-        // mv.addObject("isNoContent", true);
-
         return mv;
     }
 
-    /**
+     /**
      * This function handles the /createpost URL.
      * This handles a post request that is going to be a form submission.
      * The form for this can be found in the home page. The form has a
@@ -68,13 +77,14 @@ public class HomeController {
     public String createPost(@RequestParam(name = "posttext") String postText) {
         System.out.println("User is creating post: " + postText);
 
-        // Redirect the user if the post creation is a success.
-        // return "redirect:/";
+        boolean result = postService.postToDatabase(postText);
 
-        // Redirect the user with an error message if there was an error.
-        String message = URLEncoder.encode("Failed to create the post. Please try again.",
-                StandardCharsets.UTF_8);
-        return "redirect:/?error=" + message;
+        if(result) {
+            return "redirect:/";
+        } else {
+            String message = URLEncoder.encode("Failed to create the post. Please try again.",
+                    StandardCharsets.UTF_8);
+            return "redirect:/?error=" + message;
+        }    
     }
-
 }

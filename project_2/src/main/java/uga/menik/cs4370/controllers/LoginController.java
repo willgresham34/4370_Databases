@@ -30,7 +30,7 @@ public class LoginController {
     private final UserService userService;
 
     /**
-     * See notes in AuthInterceptor.java regarding how this works 
+     * See notes in AuthInterceptor.java regarding how this works
      * through dependency injection and inversion of control.
      */
     @Autowired
@@ -51,7 +51,7 @@ public class LoginController {
         ModelAndView mv = new ModelAndView("login_page");
 
         // Log out if the user is already logged in.
-        userService.unAuthenticate();
+        // userService.unAuthenticate();
 
         // If an error occured, you can set the following property with the
         // error message to show the error message to the user.
@@ -62,7 +62,8 @@ public class LoginController {
 
     /**
      * This handles the /login form submission.
-     * See notes in HomeController.java regardig /createpost form submission handler.
+     * See notes in HomeController.java regardig /createpost form submission
+     * handler.
      */
     @PostMapping
     public String login(@RequestParam("username") String username,

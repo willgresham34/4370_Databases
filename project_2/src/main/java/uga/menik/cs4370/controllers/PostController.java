@@ -9,6 +9,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import uga.menik.cs4370.models.ExpandedPost;
-import uga.menik.cs4370.utility.Utility;
+import uga.menik.cs4370.services.PostService;
+import uga.menik.cs4370.services.UserService;
 
 /**
  * Handles /post URL and its sub urls.
@@ -26,6 +29,15 @@ import uga.menik.cs4370.utility.Utility;
 @Controller
 @RequestMapping("/post")
 public class PostController {
+
+
+    private final UserService userService;
+    private final PostService postService;
+
+    public PostController(UserService u, DataSource d, PostService p) {
+        this.userService = u;
+        this.postService = p;
+    }
 
     /**
      * This function handles the /post/{postId} URL.
@@ -46,7 +58,7 @@ public class PostController {
 
         // Following line populates sample data.
         // You should replace it with actual data from the database.
-        List<ExpandedPost> posts = Utility.createSampleExpandedPostWithComments();
+        List<ExpandedPost> posts = postService.constructExpandedPost(postId);
         mv.addObject("posts", posts);
 
         // If an error occured, you can set the following property with the
@@ -75,13 +87,14 @@ public class PostController {
         System.out.println("\tpostId: " + postId);
         System.out.println("\tcomment: " + comment);
 
-        // Redirect the user if the comment adding is a success.
-        // return "redirect:/post/" + postId;
+        boolean result = postService.commentToDatabase(postId, comment);
 
-        // Redirect the user with an error message if there was an error.
-        String message = URLEncoder.encode("Failed to post the comment. Please try again.",
-                StandardCharsets.UTF_8);
-        return "redirect:/post/" + postId + "?error=" + message;
+        if(result) {
+            return "redirect:/post/" + postId;
+        } else {
+            return "redirect:/post/" + postId + "?error=" + URLEncoder.encode("Failed to post comment. Please try again",
+            StandardCharsets.UTF_8);
+        }
     }
 
     /**
@@ -97,13 +110,16 @@ public class PostController {
         System.out.println("\tpostId: " + postId);
         System.out.println("\tisAdd: " + isAdd);
 
-        // Redirect the user if the comment adding is a success.
-        // return "redirect:/post/" + postId;
 
-        // Redirect the user with an error message if there was an error.
-        String message = URLEncoder.encode("Failed to (un)like the post. Please try again.",
-                StandardCharsets.UTF_8);
-        return "redirect:/post/" + postId + "?error=" + message;
+        boolean result = postService.heartToDatabase(postId, isAdd);
+
+        if(result) {
+            return "redirect:/post/" + postId;
+        } else {
+            String message = URLEncoder.encode("Failed to (un)like the post. Please try again.",
+            StandardCharsets.UTF_8);
+            return "redirect:/post/" + postId + "?error=" + message;
+        }
     }
 
     /**
@@ -115,17 +131,20 @@ public class PostController {
     @GetMapping("/{postId}/bookmark/{isAdd}")
     public String addOrRemoveBookmark(@PathVariable("postId") String postId,
             @PathVariable("isAdd") Boolean isAdd) {
-        System.out.println("The user is attempting add or remove a bookmark:");
-        System.out.println("\tpostId: " + postId);
-        System.out.println("\tisAdd: " + isAdd);
 
-        // Redirect the user if the comment adding is a success.
-        // return "redirect:/post/" + postId;
+                System.out.println("The user is attempting add or remove a bookmark:");
+                System.out.println("\tpostId: " + postId);
+                System.out.println("\tisAdd: " + isAdd);
 
-        // Redirect the user with an error message if there was an error.
-        String message = URLEncoder.encode("Failed to (un)bookmark the post. Please try again.",
-                StandardCharsets.UTF_8);
-        return "redirect:/post/" + postId + "?error=" + message;
-    }
+                boolean result = postService.bookmarkToDatabase(postId, isAdd);
+
+                if(result) {
+                    return "redirect:/post/" + postId;
+                } else {
+                    String message = URLEncoder.encode("Failed to (un)bookmark the post. Please try again.",
+                    StandardCharsets.UTF_8);
+                    return "redirect:/post/" + postId + "?error=" + message;
+                }
+            }
 
 }
