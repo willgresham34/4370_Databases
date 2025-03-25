@@ -163,3 +163,107 @@ WHERE
     AND h.hashTag IN (?)
 ORDER BY
     p.postDate DESC;
+
+/*
+  This query uses data from the User table to return a list containing all
+  users on the site. It also uses data from Follow and Post table to tell 
+  if the user is followed by the current logged in user
+  It is used at http://localhost:8081/people aka the people page 
+*/
+select
+    User.userId as userId, 
+    firstName, 
+    lastName,
+    (
+        User.userId in
+        (
+            select 
+                followeeUserId
+            from 
+                Follow 
+            where 
+                followerUserId = ?)
+    ) as isFollowed,
+    lastActive
+from
+    User
+left join
+    (
+        select 
+            userId, 
+            max(postDate) as lastActive 
+        from 
+            Post 
+        group by 
+            userId
+    ) as userLastActive 
+on 
+    userLastActive.userId = User.userId
+where
+    User.userId != ?;
+
+/*
+  This query combines data from the User, Post, and Bookmark table to 
+  return a list containing all posts bookmarked by the current user. 
+  It also uses data from Comment, Heart, and Bookmark table to tell 
+  the hearts and comments count, as well as if the post is bookmarked
+  and hearted by the current logged in user.
+  It is used at http://localhost:8081/bookmarks aka the bookmarks page
+*/
+select
+    Post.postId as postId, 
+    postText, 
+    postDate,
+    User.userId as userId, 
+    firstName, 
+    lastName,
+    -- find the heart count for each post
+    (
+        select 
+            count(*) 
+        from 
+            Heart h 
+        where 
+            h.postId = Post.postId
+    ) as heartsCount,
+    
+    (
+        select 
+            count(*) 
+        from 
+            Comment c 
+        where 
+            c.postId = Post.postId
+    ) as commentsCount,
+    (
+        Post.postId in 
+        (
+            select 
+                Heart.postId 
+            from 
+                Heart 
+            where 
+                userId = ?
+        )
+    ) as isHearted,
+    (
+        Post.postId in 
+            (
+                select 
+                    Bookmark.postId 
+                from 
+                    Bookmark 
+                where 
+                    userId = ?
+            )
+    ) as isBookmarked
+    from
+        Post, 
+        Bookmark, 
+        User
+    where
+        User.userId = Post.userId and
+        Post.postId = Bookmark.postId and
+        Bookmark.userId = ?
+    order by 
+        Post.postDate desc;
