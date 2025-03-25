@@ -344,4 +344,6 @@ public class PostService {
             return false;
         }
     }
+
+    public
 };
