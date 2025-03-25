@@ -17,7 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 import uga.menik.cs4370.models.Post;
 import uga.menik.cs4370.services.PostService;
 import uga.menik.cs4370.services.UserService;
-import uga.menik.cs4370.utility.Utility;
 
 /**
  * Handles /profile URL and its sub URLs.

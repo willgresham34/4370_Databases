@@ -9,8 +9,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uga.menik.cs4370.models.ExpandedPost;
 import uga.menik.cs4370.services.PostService;
-import uga.menik.cs4370.services.UserService;
 
 /**
  * Handles /post URL and its sub urls.
@@ -30,12 +27,10 @@ import uga.menik.cs4370.services.UserService;
 @RequestMapping("/post")
 public class PostController {
 
-
-    private final UserService userService;
     private final PostService postService;
 
-    public PostController(UserService u, DataSource d, PostService p) {
-        this.userService = u;
+    public PostController(PostService p) {
+
         this.postService = p;
     }
 
@@ -89,18 +84,20 @@ public class PostController {
 
         boolean result = postService.commentToDatabase(postId, comment);
 
-        if(result) {
+        if (result) {
             return "redirect:/post/" + postId;
         } else {
-            return "redirect:/post/" + postId + "?error=" + URLEncoder.encode("Failed to post comment. Please try again",
-            StandardCharsets.UTF_8);
+            return "redirect:/post/" + postId + "?error="
+                    + URLEncoder.encode("Failed to post comment. Please try again",
+                            StandardCharsets.UTF_8);
         }
     }
 
     /**
      * Handles likes added on posts.
      * See comments on webpage function to see how path variables work here.
-     * See comments in PeopleController.java in followUnfollowUser function regarding 
+     * See comments in PeopleController.java in followUnfollowUser function
+     * regarding
      * get type form submissions and how path variables work.
      */
     @GetMapping("/{postId}/heart/{isAdd}")
@@ -110,14 +107,13 @@ public class PostController {
         System.out.println("\tpostId: " + postId);
         System.out.println("\tisAdd: " + isAdd);
 
-
         boolean result = postService.heartToDatabase(postId, isAdd);
 
-        if(result) {
+        if (result) {
             return "redirect:/post/" + postId;
         } else {
             String message = URLEncoder.encode("Failed to (un)like the post. Please try again.",
-            StandardCharsets.UTF_8);
+                    StandardCharsets.UTF_8);
             return "redirect:/post/" + postId + "?error=" + message;
         }
     }
@@ -125,26 +121,27 @@ public class PostController {
     /**
      * Handles bookmarking posts.
      * See comments on webpage function to see how path variables work here.
-     * See comments in PeopleController.java in followUnfollowUser function regarding 
+     * See comments in PeopleController.java in followUnfollowUser function
+     * regarding
      * get type form submissions.
      */
     @GetMapping("/{postId}/bookmark/{isAdd}")
     public String addOrRemoveBookmark(@PathVariable("postId") String postId,
             @PathVariable("isAdd") Boolean isAdd) {
 
-                System.out.println("The user is attempting add or remove a bookmark:");
-                System.out.println("\tpostId: " + postId);
-                System.out.println("\tisAdd: " + isAdd);
+        System.out.println("The user is attempting add or remove a bookmark:");
+        System.out.println("\tpostId: " + postId);
+        System.out.println("\tisAdd: " + isAdd);
 
-                boolean result = postService.bookmarkToDatabase(postId, isAdd);
+        boolean result = postService.bookmarkToDatabase(postId, isAdd);
 
-                if(result) {
-                    return "redirect:/post/" + postId;
-                } else {
-                    String message = URLEncoder.encode("Failed to (un)bookmark the post. Please try again.",
+        if (result) {
+            return "redirect:/post/" + postId;
+        } else {
+            String message = URLEncoder.encode("Failed to (un)bookmark the post. Please try again.",
                     StandardCharsets.UTF_8);
-                    return "redirect:/post/" + postId + "?error=" + message;
-                }
-            }
+            return "redirect:/post/" + postId + "?error=" + message;
+        }
+    }
 
 }
