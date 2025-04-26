@@ -33,14 +33,23 @@ CREATE TABLE
     IF NOT EXISTS Sets (
         setId INT AUTO_INCREMENT,
         userId INT NOT NULL,
-        folderId INT NOT NULL,
         setName VARCHAR(255) NOT NULL,
         setDescription VARCHAR(500) NOT NULL,
         setCategory VARCHAR(255) NOT NULL,
         PRIMARY KEY (setId),
         INDEX idx_sets_userId (userId),
-        INDEX idx_sets_folderId (folderId),
         FOREIGN KEY (userId) REFERENCES users (userId) ON DELETE CASCADE,
+    );
+
+-- sets_folder table
+CREATE TABLE
+    IF NOT EXISTS Set_Folders (
+        setId INT NOT NULL,
+        folderId INT NOT NULL,
+        PRIMARY KEY (setId, folderId),
+        INDEX idx_set_folders_setId (setId),
+        INDEX idx_set_folders_folderId (folderId),
+        FOREIGN KEY (setId) REFERENCES sets (setId) ON DELETE CASCADE,
         FOREIGN KEY (folderId) REFERENCES folders (folderId) ON DELETE CASCADE
     );
 

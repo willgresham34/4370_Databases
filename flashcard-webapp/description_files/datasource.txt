@@ -1,0 +1,2 @@
+We used data from this datasource https://www.kaggle.com/datasets/lukemiller1987/flashcards 
+to create the individual flashcards.
