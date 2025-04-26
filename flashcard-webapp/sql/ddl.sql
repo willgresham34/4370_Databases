@@ -7,7 +7,7 @@ USE flashcards_db;
 
 -- users table
 CREATE TABLE
-    IF NOT EXISTS users (
+    IF NOT EXISTS Users (
         userId INT AUTO_INCREMENT,
         username VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE
 
 -- folders table
 CREATE TABLE
-    IF NOT EXISTS folders (
+    IF NOT EXISTS Folders (
         folderId INT AUTO_INCREMENT,
         userId INT NOT NULL,
         folderName VARCHAR(255),
@@ -30,7 +30,7 @@ CREATE TABLE
 
 -- sets table
 CREATE TABLE
-    IF NOT EXISTS sets (
+    IF NOT EXISTS Sets (
         setId INT AUTO_INCREMENT,
         userId INT NOT NULL,
         folderId INT NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE
 
 -- 5) flashcards table
 CREATE TABLE
-    IF NOT EXISTS flashcards (
+    IF NOT EXISTS Flashcards (
         cardId INT AUTO_INCREMENT,
         setId INT NOT NULL,
         cardTerm VARCHAR(255) NOT NULL,
