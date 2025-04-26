@@ -1,2 +1,13 @@
 We used data from this datasource https://www.kaggle.com/datasets/lukemiller1987/flashcards 
 to create the individual flashcards.
+
+I took this dataset in txt and turned them in to a 2 tuple literal of just (question, answer)
+then wrote a python script that imports the txt file as an array and select a random question
+and answer pair to and a random set 1-20 to assign it to. With all of that it creates 1000 
+flashcards in the Flashcards table.
+
+All of this is done by running the db_init.bash file. It executes our ddl.sql file to setup
+the database, the data.sql file to setup the base information which is 4 sample users, each 
+sample user has 5 sets, and also a couple of them have folders too. This base data is needed 
+before we execute the createCards.py script that creates the cards and assigns them to the
+sets.
