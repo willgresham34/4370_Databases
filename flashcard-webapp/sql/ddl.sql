@@ -1,9 +1,11 @@
--- 1) (Optional) create & switch to your database
+-- drop and create database
+DROP DATABASE flashcards_db;
+
 CREATE DATABASE IF NOT EXISTS flashcards_db;
 
 USE flashcards_db;
 
--- 2) users table
+-- users table
 CREATE TABLE
     IF NOT EXISTS users (
         userId INT AUTO_INCREMENT,
@@ -15,7 +17,7 @@ CREATE TABLE
         UNIQUE KEY uq_users_username (username)
     );
 
--- 3) folders table
+-- folders table
 CREATE TABLE
     IF NOT EXISTS folders (
         folderId INT AUTO_INCREMENT,
@@ -26,7 +28,7 @@ CREATE TABLE
         FOREIGN KEY (userId) REFERENCES users (userId) ON DELETE CASCADE
     );
 
--- 4) sets table
+-- sets table
 CREATE TABLE
     IF NOT EXISTS sets (
         setId INT AUTO_INCREMENT,
