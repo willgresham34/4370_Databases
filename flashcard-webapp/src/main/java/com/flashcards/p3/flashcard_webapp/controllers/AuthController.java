@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.net.URLEncoder;
 
 @Controller
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AccountService _accountService;
@@ -22,11 +23,10 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String getLogin(Model model, @RequestParam(value = "error", required = false) String error) {
-        model.addAttribute("title", "Login");
-        model.addAttribute("body", "{{> pages/login}}");
-        model.addAttribute("error",  error != null ? "Invalid username or password." : null;
-        return "base";
+    public String showLogin(Model model,
+            @RequestParam(value = "error", required = false) String error) {
+        model.addAttribute("error", error);
+        return "pages/login"; // Renders login.mustache which extends base
     }
 
     @PostMapping("/login")
@@ -35,7 +35,7 @@ public class AuthController {
         if (user.getUsername() == null || user.getUsername().isBlank() ||
                 user.getPassword() == null || user.getPassword().isBlank()) {
             String message = URLEncoder.encode("Username and Password cannot be blank", "UTF-8");
-            return "redirect:/login?error=" + message;
+            return "redirect:/aith/login?error=" + message;
         }
 
         try {
@@ -44,36 +44,36 @@ public class AuthController {
             if (!success) {
                 String message = URLEncoder
                         .encode("Login failed. Please try different Credentials", "UTF-8");
-                return "redirect:/login?error=" + message;
+                return "redirect:/auth/login?error=" + message;
             }
 
             return "redirect:/";
         } catch (Exception e) {
             String message = URLEncoder
                     .encode("An error occurred: " + e.getMessage(), "UTF-8");
-            return "redirect:/login?error=" + message;
+            return "redirect:/auth/login?error=" + message;
         }
     }
 
     @GetMapping("/register")
-    public String getRegister(Model model, @RequestParam(value = "error", required = false) String error) {
-        model.addAttribute("title", "Register");
-        model.addAttribute("body", "{{> pages/register}}");
-        model.addAttribute("error", error != null ? "Invalid username or password." : null);
-        return "base";
+    public String showRegister(Model model,
+            @RequestParam(value = "error", required = false) String error) {
+        model.addAttribute("error", error);
+        return "pages/register";
     }
 
     @PostMapping("/register")
     public String postRegister(@RequestBody RegisterUserDto user) {
+
         if (user.getPassword().trim().length() < 8) {
             String message = URLEncoder.encode("Passwords should be at least 8 characters long.", "UTF-8");
-            return "redirect:/register?error=" + message;
+            return "redirect:/auth/register?error=" + message;
         }
 
         if (!user.getPassword().equals(user.getPasswordRepeat())) {
             String message = URLEncoder
                     .encode("Passwords must match.", "UTF-8");
-            return "redirect:/register?error=" + message;
+            return "redirect:/auth/register?error=" + message;
         }
 
         try {
@@ -82,14 +82,14 @@ public class AuthController {
             if (!success) {
                 String message = URLEncoder
                         .encode("Registration failed. Please try again.", "UTF-8");
-                return "redirect:/register?error=" + message;
+                return "redirect:/auth/register?error=" + message;
             }
 
-            return "redirect:/login";
+            return "redirect:/auth/login";
         } catch (Exception e) {
             String message = URLEncoder
                     .encode("An error occurred: " + e.getMessage(), "UTF-8");
-            return "redirect:/register?error=" + message;
+            return "redirect:/auth/register?error=" + message;
         }
 
     }

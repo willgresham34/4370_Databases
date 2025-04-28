@@ -1,11 +1,19 @@
-    <div class="container center-align narrow">
-        {{> fragments/error_message}}
-        <form method="post" action="/register">
-            <input name="firstName" class="" type="text" placeholder="First Name">
-            <input name="lastName" class="" type="text" placeholder="Last Name">
-            <input name="username" class="" type="text" placeholder="Username">
-            <input name="password" class="" type="password" placeholder="Password">
-            <input name="passwordRepeat" class="" type="password" placeholder="Repeat Password">
-            <button type="submit" class="action-button">Register</button>
-        </form>
-    </div>
+{{< base}}
+  {{$title}}Register{{/title}}
+
+  {{$body}}
+  <div class="container center-align narrow">
+    {{> fragments/error_message}}
+    <form method="post" action="/auth/register">
+      <input name="firstName" class="short-input full" placeholder="First Name">
+      <input name="lastName"  class="short-input full" placeholder="Last Name">
+      <input name="username"  class="short-input full" placeholder="Username">
+      <input name="email"     class="short-input full" placeholder="Email">
+      <input name="password"  class="short-input full" type="password" placeholder="Password">
+      <input name="passwordRepeat"  class="short-input full" type="password" placeholder="Repeat Password">
+      <button type="submit" class="action-button">Register</button>
+      <a class="link" href="/auth/login">Back to Login</a>
+    </form>
+  </div>
+  {{/body}}
+{{/base}}
