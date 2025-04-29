@@ -9,6 +9,7 @@ import com.flashcards.p3.flashcard_webapp.services.AccountService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 @Controller
@@ -30,16 +31,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String postLogin(@RequestBody LoginUserDto user) {
+    public String postLogin(@ModelAttribute LoginUserDto user) throws UnsupportedEncodingException {
 
         if (user.getUsername() == null || user.getUsername().isBlank() ||
                 user.getPassword() == null || user.getPassword().isBlank()) {
             String message = URLEncoder.encode("Username and Password cannot be blank", "UTF-8");
-            return "redirect:/aith/login?error=" + message;
+            return "redirect:/auth/login?error=" + message;
         }
 
         try {
-            boolean success = _accountService.loginUser(user);
+            // boolean success = _accountService.loginUser(user);
+            boolean success = true;
 
             if (!success) {
                 String message = URLEncoder
@@ -63,7 +65,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String postRegister(@RequestBody RegisterUserDto user) {
+    public String postRegister(@ModelAttribute RegisterUserDto user) throws UnsupportedEncodingException {
 
         if (user.getPassword().trim().length() < 8) {
             String message = URLEncoder.encode("Passwords should be at least 8 characters long.", "UTF-8");
@@ -77,7 +79,8 @@ public class AuthController {
         }
 
         try {
-            boolean success = _accountService.registerUser(user);
+            // boolean success = _accountService.registerUser(user);
+            boolean success = true;
 
             if (!success) {
                 String message = URLEncoder

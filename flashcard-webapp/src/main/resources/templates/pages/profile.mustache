@@ -1,0 +1,25 @@
+{{< base}}
+  {{$title}}Profile — {{user.username}}{{/title}}
+
+  {{$body}}
+  <div class="container center-align narrow">
+    <!-- User Info -->
+    <section class="profile-info">
+      <h2>{{user.firstName}} {{user.lastName}}</h2>
+      <p class="profile-username">@{{user.username}}</p>
+      <p class="profile-email">{{user.email}}</p>
+    </section>
+
+    <!-- Their Sets -->
+    <section class="profile-sets">
+      <h3>Your Sets</h3>
+      {{#sets}}
+        {{> fragments/set_preview}}
+      {{/sets}}
+      {{^sets}}
+        <p>You haven’t created any sets yet.</p>
+      {{/sets}}
+    </section>
+  </div>
+  {{/body}}
+{{/base}}

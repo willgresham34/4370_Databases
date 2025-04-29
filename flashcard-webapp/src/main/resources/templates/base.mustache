@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{{title}}</title>
+  <title>{{$title}}Flashcards{{/title}}</title>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
   <header>{{> fragments/header}}</header>
-
-  {{! Named block “body” }}
-  {{{body}}}
-
+  <main>
+  {{$body}}
+    <p>Oops, no content was provided.</p>
+  {{/body}}
+  </main>
   <footer>{{> fragments/footer}}</footer>
 </body>
 </html>

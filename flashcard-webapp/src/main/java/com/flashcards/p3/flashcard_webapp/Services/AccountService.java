@@ -1,5 +1,8 @@
 package com.flashcards.p3.flashcard_webapp.services;
 
-public class AccountService {
+import org.springframework.stereotype.Service;
 
+@Service
+public class AccountService {
+    // your registration/login methods here
 }
