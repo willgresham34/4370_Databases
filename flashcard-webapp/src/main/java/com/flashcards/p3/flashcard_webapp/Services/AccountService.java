@@ -9,11 +9,13 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.flashcards.p3.flashcard_webapp.dtos.LoginUserDto;
 import com.flashcards.p3.flashcard_webapp.dtos.RegisterUserDto;
 import com.flashcards.p3.flashcard_webapp.models.User;
 
+@Service
 public class AccountService {
     private final DataSource dataSource;
     private final BCryptPasswordEncoder passwordEncoder;
