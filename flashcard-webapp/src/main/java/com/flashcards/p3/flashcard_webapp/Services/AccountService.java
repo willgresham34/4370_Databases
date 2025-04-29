@@ -63,7 +63,7 @@ public class AccountService {
                         User loggedInUser = new User(userId, firstName, lastName);
                         this.loggedInUser = loggedInUser;
                     }
-                    return isPassMatch;
+                    return isPassMatch && loggedInUser != null;
                 }
             }
         }

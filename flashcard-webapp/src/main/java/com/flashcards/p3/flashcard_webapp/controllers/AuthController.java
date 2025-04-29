@@ -6,6 +6,9 @@ import org.springframework.ui.Model;
 import com.flashcards.p3.flashcard_webapp.dtos.*;
 
 import com.flashcards.p3.flashcard_webapp.services.AccountService;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,7 +34,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String postLogin(@ModelAttribute LoginUserDto user) throws UnsupportedEncodingException {
+    public String postLogin(@ModelAttribute LoginUserDto user, HttpSession session)
+            throws UnsupportedEncodingException {
 
         if (user.getUsername() == null || user.getUsername().isBlank() ||
                 user.getPassword() == null || user.getPassword().isBlank()) {
@@ -48,7 +52,6 @@ public class AuthController {
                         .encode("Login failed. Please try different Credentials", "UTF-8");
                 return "redirect:/auth/login?error=" + message;
             }
-
             return "redirect:/";
         } catch (Exception e) {
             String message = URLEncoder

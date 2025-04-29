@@ -23,13 +23,10 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("title", "Home Page");
-        model.addAttribute("body", getBody("pages/home"));
-        return "base";
-    }
 
-    private String getBody(String pagePath) {
-        return "{{> " + pagePath + "}}";
+        // get sets
+        // model.addAttribute("sets", sets);
+        return "pages/home";
     }
 
 }
