@@ -29,44 +29,44 @@ public class AccountService {
         final String sql1 = "insert into Users (username, password, firstName, lastName) values (?, ?, ?, ?)";
 
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement registerStmt = conn.prepareStatement(sql1)) {
-                registerStmt.setString(1, user.getUsername());
-                registerStmt.setString(2, passwordEncoder.encode(user.getPassword()));
-                registerStmt.setString(3, user.getFirstName());
-                registerStmt.setString(4, user.getLastName());
+                PreparedStatement registerStmt = conn.prepareStatement(sql1)) {
+            registerStmt.setString(1, user.getUsername());
+            registerStmt.setString(2, passwordEncoder.encode(user.getPassword()));
+            registerStmt.setString(3, user.getFirstName());
+            registerStmt.setString(4, user.getLastName());
 
-                int rowsAffected = registerStmt.executeUpdate();
-                return rowsAffected > 0;
+            int rowsAffected = registerStmt.executeUpdate();
+            return rowsAffected > 0;
         }
     }
 
-    public boolean loginUser(LoginUserDto user) throws SQLException{
+    public boolean loginUser(LoginUserDto user) throws SQLException {
 
         final String sql = "select * from User where username = ?";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                
-                    try(ResultSet rs = pstmt.executeQuery()) {
 
-                        while (rs.next()) {
-                            String storedPasswordHash = rs.getString("password");
-                            boolean isPassMatch = passwordEncoder.matches(user.getPassword(), storedPasswordHash);
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-                            if (isPassMatch) {
-                                String userId = rs.getString("userId");
-                                String firstName = rs.getString("firstName");
-                                String lastName = rs.getString("lastName");
+                while (rs.next()) {
+                    String storedPasswordHash = rs.getString("password");
+                    boolean isPassMatch = passwordEncoder.matches(user.getPassword(), storedPasswordHash);
 
-                                User loggedInUser = new User(userId, firstName, lastName);
-                                this.loggedInUser = loggedInUser;
-                            }
-                            return isPassMatch;
-                        }
+                    if (isPassMatch) {
+                        String userId = rs.getString("userId");
+                        String firstName = rs.getString("firstName");
+                        String lastName = rs.getString("lastName");
+
+                        User loggedInUser = new User(userId, firstName, lastName);
+                        this.loggedInUser = loggedInUser;
                     }
+                    return isPassMatch;
                 }
-                return false;
             }
+        }
+        return false;
+    }
 
     public void unAuthenticate() {
         loggedInUser = null;
@@ -74,5 +74,9 @@ public class AccountService {
 
     public User getLoggedInUser() {
         return loggedInUser;
+    }
+
+    public boolean isAuthenticated() {
+        return loggedInUser != null;
     }
 }
