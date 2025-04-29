@@ -9,11 +9,15 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.SessionScope;
 
 import com.flashcards.p3.flashcard_webapp.dtos.LoginUserDto;
 import com.flashcards.p3.flashcard_webapp.dtos.RegisterUserDto;
 import com.flashcards.p3.flashcard_webapp.models.User;
 
+@Service
+@SessionScope
 public class AccountService {
     private final DataSource dataSource;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -66,7 +70,7 @@ public class AccountService {
                     }
                 }
                 return false;
-            }
+    }
 
     public void unAuthenticate() {
         loggedInUser = null;
