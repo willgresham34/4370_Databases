@@ -79,6 +79,7 @@ public class AccountService {
     }
 
     public boolean isAuthenticated() {
+        System.out.println(loggedInUser != null);
         return loggedInUser != null;
     }
 }
