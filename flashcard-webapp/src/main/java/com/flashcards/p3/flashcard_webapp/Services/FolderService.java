@@ -3,12 +3,15 @@ package com.flashcards.p3.flashcard_webapp.services;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
+
+import com.flashcards.p3.flashcard_webapp.models.Folder;
 
 @Service
 @SessionScope
@@ -45,5 +48,13 @@ public class FolderService {
                 int rowsAffected = stmt.executeUpdate();
                 return rowsAffected > 0;
         }            
+    }
+
+    public List<Folder> getFoldersByUserId(String userId) {
+        throw new UnsupportedOperationException("getFoldersByUserId not implemented");
+    }
+
+    public Folder getFolderById(String folderId) {
+        throw new UnsupportedOperationException("getFolderById not implemented");
     }
 }
