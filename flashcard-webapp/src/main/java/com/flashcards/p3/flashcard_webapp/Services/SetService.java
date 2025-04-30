@@ -53,24 +53,4 @@ public class SetService {
 
         }
     }
-
-    public boolean updateSet(Set existingSet) throws SQLException {
-        throw new UnsupportedOperationException("updateSet not implemented");
-    }
-
-    public boolean updateFlashcard(Flashcard existingCard) {
-        throw new UnsupportedOperationException("updateCard not implemented");
-    }
-
-    public boolean getSet(String setId) {
-        throw new UnsupportedOperationException("getSet not implemented");
-    }
-
-    public boolean getCard(String cardId) {
-        throw new UnsupportedOperationException("getCard not implemented");
-    }
-    
-    public boolean likeToDatabase(String setId, Boolean isLiked) {
-        throw new UnsupportedOperationException("likeToDatabase not implemented");
-    }
 }
