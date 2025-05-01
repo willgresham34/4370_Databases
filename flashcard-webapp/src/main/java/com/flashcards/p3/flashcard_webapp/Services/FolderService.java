@@ -21,7 +21,7 @@ public class FolderService {
     }
 
     public boolean addFolder(String userId, String folderName) throws SQLException {
-        final String sql = "insert into Folders (userId, folderName)";
+        final String sql = "insert into Folders (userId, folderName) values (?, ?)";
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement folderStmt = conn.prepareStatement(sql)) {
@@ -35,7 +35,7 @@ public class FolderService {
     }
 
     public boolean addSetToFolder(String setId, String folderId) throws SQLException{
-        final String sql = "inset into Set_Folders (setId, folderId)";
+        final String sql = "inset into Set_Folders (setId, folderId) values (?, ?)";
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
