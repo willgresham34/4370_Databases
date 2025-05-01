@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <title>{{$title}}Flashcards{{/title}}</title>
   <link rel="stylesheet" href="/css/styles.css">
+    {{#pageCss}}
+    <link rel="stylesheet" href="{{pageCss}}">
+    {{/pageCss}}
 </head>
 <body>
   <header>{{> fragments/header}}</header>

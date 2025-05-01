@@ -1,0 +1,25 @@
+.flashcard {
+  border: 1px solid #1a1818;
+}
+
+.details-header {
+  font-size: xx-large;
+}
+/* .flashcard .side {
+  flex: 1;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.flashcard .divider {
+  width: 1px;
+  background-color: #ccc;
+}
+.flashcard .term {
+  background-color: #f9f9f9;
+  font-weight: bold;
+  text-align: center;
+}
+.flashcard .desc {
+  background-color: #fff;
+  text-align: center;
+} */

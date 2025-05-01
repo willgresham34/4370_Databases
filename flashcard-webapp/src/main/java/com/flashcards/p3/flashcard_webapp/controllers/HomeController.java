@@ -45,10 +45,12 @@ public class HomeController {
             model.addAttribute("hasNext", page < totalPages - 1);
             model.addAttribute("previousPage", page - 1);
             model.addAttribute("nextPage", page + 1);
+
         } catch (Exception e) {
             model.addAttribute("error", e.toString());
         }
 
+        model.addAttribute("pageCss", "/css/home.css");
         return "pages/home";
     }
 
