@@ -93,7 +93,7 @@ public class SetService {
                     Flashcard tempCard = new Flashcard(rs.getString("cardId"), setId, rs.getString("cardTerm"), rs.getString("cardDesc"));
                     setCards.add(tempCard);
                 }
-                return List.copyOf(setCards);
+                return setCards;
             }
     }
 
@@ -110,7 +110,7 @@ public class SetService {
                     Set tempSet = new Set(rs.getString("setId"), rs.getString("setName"), rs.getString("setDescription"), rs.getString("setCategory"));
                     userSets.add(tempSet);
                 }
-                return List.copyOf(userSets);
+                return userSets;
             }
             
     }
@@ -127,7 +127,7 @@ public class SetService {
                     Set tempSet = new Set(rs.getString("setId"), rs.getString("setName"), rs.getString("setDescription"), rs.getString("setCategory"));
                     catSets.add(tempSet);
                 }
-                return List.copyOf(catSets);
+                return catSets;
             }
         
     }
@@ -143,7 +143,21 @@ public class SetService {
                     Set tempSet = new Set(rs.getString("setId"), rs.getString("setName"), rs.getString("setDescription"), rs.getString("setCategory"));
                     nameSets.add(tempSet);
                 }
-                return List.copyOf(nameSets);
+                return nameSets;
+            }
+    }
+
+    public List <Set> getNewestSets() throws SQLException {
+        String sql = "select * from Sets order by setId desc";
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                ResultSet rs = pstmt.executeQuery();
+                List <Set> sets = new ArrayList<Set> ();
+                while (rs.next()) {
+                    Set tempSet = new Set(rs.getString("setId"), rs.getString("setName"), rs.getString("setDescription"), rs.getString("setCategory"));
+                    sets.add(tempSet);
+                }
+                return sets;
             }
     }
 
