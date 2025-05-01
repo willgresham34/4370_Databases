@@ -78,11 +78,11 @@ public class FolderService {
      * @throws SQLException if the SQL statement is invalid.
      */
     public boolean addSetToFolder(String setId, Folder folder) throws SQLException {
-        final String sql = "insert into Set_Folders (setId, folderId)";
 
         if (!folder.getUser().equals(accountService.getLoggedInUser())) {
             throw new IllegalArgumentException("Folder does not belong to user");
         }
+        final String sql = "insert into Set_Folders (setId, folderId) values (?, ?)";
         try (Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, setId);
@@ -172,9 +172,10 @@ public class FolderService {
      * @param folder    the folder to delete
      * @return {@code true} if folder deleted, {@code false} otherwise
      * @throws SQLException if SQL statement is invalid
+     * @throws IllegalArgumentException
      * 
      */
-    public boolean deleteFolder(Folder folder) throws SQLException {
+    public boolean deleteFolder(Folder folder) throws SQLException, IllegalArgumentException {
 
         if (folder.getFolderName().equals("Favorites")) {
             throw new IllegalArgumentException("Cannot delete favorites folder");
