@@ -66,8 +66,6 @@ public class AccountService {
                         User loggedInUser = new User(userId, firstName, lastName);
                         this.loggedInUser = loggedInUser;
                     }
-                    System.out.print("Login worked: ");
-                    System.out.println(isPassMatch && loggedInUser != null);
                     return isPassMatch && loggedInUser != null;
                 }
             } catch (Exception e) {
@@ -86,7 +84,6 @@ public class AccountService {
     }
 
     public boolean isAuthenticated() {
-        System.out.println(loggedInUser != null);
         return loggedInUser != null;
     }
 }
