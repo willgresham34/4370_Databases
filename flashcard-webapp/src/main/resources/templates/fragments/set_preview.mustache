@@ -1,10 +1,19 @@
-<div class="set-preview">
-  <div class="set-prev-header">
-    <h2 class="set-title">{{setName}}</h2>
-    <span class="set-category">{{setCategory}}</span>
-    <p class="set-author">By {{username}}</p>
-  </div>
-  <div class="set-prev-body">
-    <p class="set-description">{{setDescription}}</p>
+<a href="/set-details?setId={{setId}}">
+  <div class="set-preview">
+    <div class="set-prev-header">
+      <h2 class="set-title">{{name}}</h2>
+      <div class="set-sub-title">
+        <div class="split">
+          <p class="set-author">By </p>
+        </div>
+        <div class="split">
+          <span class="set-category">{{category}}</span>
+        </div>
+      </div>   
+    </div>
+    <div class="set-prev-body">
+      <p class="set-description">{{desc}}</p>
   </div>
 </div>
+</a>
+

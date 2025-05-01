@@ -1,18 +1,18 @@
 <nav class="navbar">
-  <a href="/" class="navbar-title">Flashi</a>
+  <a href="/" class="navbar-title">FlashCards</a>
   <ul class="nav-links">
-      {{#authenticated}}
+    {{#authenticated}}
       <li><a class="nav-button" href="/profile">Profile</a></li>
       <li>
-        <form method="post" action="/auth/logout" style="display:inline">
+        <form action="/logout" method="post" style="display:inline">
           <button type="submit" class="nav-button">Logout</button>
         </form>
       </li>
     {{/authenticated}}
 
     {{^authenticated}}
-      <li><a  class="nav-button" href="/auth/login">Login</a></li>
-      <li><a  class="nav-button" href="/auth/register">Register</a></li>
+      <li><a href="/auth/login" class="nav-button">Login</a></li>
+      <li><a href="/auth/register" class="nav-button">Register</a></li>
     {{/authenticated}}
   </ul>
 </nav>

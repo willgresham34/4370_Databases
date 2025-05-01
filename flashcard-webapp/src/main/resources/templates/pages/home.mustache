@@ -3,7 +3,26 @@
 
   {{$body}}
   <div class="container">
-    Home page
+    <h1>Recently Made Sets:</h1>
+    <div class="set-list-container">
+    {{> fragments/error_message}}
+      <ul>
+        {{#sets}}
+          {{> fragments/set_preview}}
+        {{/sets}}
+      </ul>
+      <div class="pagination">
+        {{#hasPrevious}}
+          <a class="pagination-button" href="/?page={{previousPage}}">&laquo; Back</a>
+        {{/hasPrevious}}
+
+        <span>Page {{currentPageDisplay}}&nbsp;of&nbsp;{{totalPages}}</span>
+
+        {{#hasNext}}
+          <a class="pagination-button" href="/?page={{nextPage}}">Next &raquo;</a>
+        {{/hasNext}}
+      </div>
+    </div>
   </div>
   {{/body}}
 {{/base}}
