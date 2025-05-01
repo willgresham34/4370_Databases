@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sound.midi.SysexMessage;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +45,12 @@ public class AccountService {
 
     public boolean loginUser(LoginUserDto user) throws SQLException {
 
-        final String sql = "select * from User where username = ?";
+        final String sql = "select * from Users where username = ?";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, user.getUsername());
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
@@ -63,8 +66,12 @@ public class AccountService {
                         User loggedInUser = new User(userId, firstName, lastName);
                         this.loggedInUser = loggedInUser;
                     }
+                    System.out.print("Login worked: ");
+                    System.out.println(isPassMatch && loggedInUser != null);
                     return isPassMatch && loggedInUser != null;
                 }
+            } catch (Exception e) {
+                System.out.println(e.toString());
             }
         }
         return false;

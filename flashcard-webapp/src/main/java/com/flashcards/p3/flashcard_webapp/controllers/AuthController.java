@@ -7,10 +7,10 @@ import com.flashcards.p3.flashcard_webapp.dtos.*;
 
 import com.flashcards.p3.flashcard_webapp.services.AccountService;
 
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -30,11 +30,11 @@ public class AuthController {
     public String showLogin(Model model,
             @RequestParam(value = "error", required = false) String error) {
         model.addAttribute("error", error);
-        return "pages/login"; // Renders login.mustache which extends base
+        return "pages/login";
     }
 
     @PostMapping("/login")
-    public String postLogin(@ModelAttribute LoginUserDto user, HttpSession session)
+    public String postLogin(@ModelAttribute LoginUserDto user)
             throws UnsupportedEncodingException {
 
         if (user.getUsername() == null || user.getUsername().isBlank() ||
@@ -44,8 +44,7 @@ public class AuthController {
         }
 
         try {
-            // boolean success = _accountService.loginUser(user);
-            boolean success = true;
+            boolean success = _accountService.loginUser(user);
 
             if (!success) {
                 String message = URLEncoder
@@ -82,8 +81,7 @@ public class AuthController {
         }
 
         try {
-            // boolean success = _accountService.registerUser(user);
-            boolean success = true;
+            boolean success = _accountService.registerUser(user);
 
             if (!success) {
                 String message = URLEncoder
@@ -98,6 +96,13 @@ public class AuthController {
             return "redirect:/auth/register?error=" + message;
         }
 
+    }
+
+    @PostMapping("/logout")
+    public String logout() throws UnsupportedEncodingException {
+        _accountService.unAuthenticate();
+        String message = URLEncoder.encode("Logged Out", "UTF-8");
+        return "redirect:/auth/login?error=" + message;
     }
 
 }
