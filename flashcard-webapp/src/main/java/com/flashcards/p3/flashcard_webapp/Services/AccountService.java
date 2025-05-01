@@ -46,7 +46,7 @@ public class AccountService {
 
     public boolean loginUser(LoginUserDto user) throws SQLException{
 
-        final String sql = "select * from User where username = ?";
+        final String sql = "select * from Users where username = ?";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
