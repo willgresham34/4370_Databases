@@ -235,7 +235,7 @@ public class SetService {
                     pstmt2.executeUpdate();
                     return true;
                 } else {
-                    return false;
+                    throw new IllegalArgumentException("Cannot update another user's card");
                 }
             }
     }
@@ -262,7 +262,7 @@ public class SetService {
                     pstmt2.executeUpdate();
                     return true;
                 } else {
-                    return false;
+                    throw new IllegalArgumentException("Cannot update another user's card");
                 }
             }
     }
@@ -286,7 +286,7 @@ public class SetService {
                     pstmt2.executeUpdate();
                     return true;
                 } else {
-                    return false;
+                    throw new IllegalArgumentException("Cannot update another user's set");
                 }
         }
     }
@@ -309,7 +309,7 @@ public class SetService {
                     pstmt2.executeUpdate();
                     return true;
                 } else {
-                    return false;
+                    throw new IllegalArgumentException("Cannot update another user's set");
                 }
         }
     }
@@ -333,7 +333,7 @@ public class SetService {
                     pstmt2.executeUpdate();
                     return true;
                 } else {
-                    return false;
+                    throw new IllegalArgumentException("cannot update another user's set");
                 }
         }
     }
