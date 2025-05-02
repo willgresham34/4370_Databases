@@ -30,7 +30,6 @@ public class SetService {
         this.accountService = accountService;
     }
 
-
     public boolean addSet(Set newSet, String userId) throws SQLException {
         final String sql = "insert into Sets (userId, setName, setDescription, setCategory) values (?, ?, ?);";
 
@@ -63,7 +62,7 @@ public class SetService {
 
     public FullSet constructFullSet(String setId) throws SQLException {
 
-        final String sql = "select * from Sets INNER JOIN Users on Sets.userId = Users.userId where setId = ?;";
+        final String sql = "select * from Sets s, Users u where s.userId = u.userId and setId = ?;";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -102,8 +101,9 @@ public class SetService {
         String currentUserId = accountService.getLoggedInUser().getUserId();
         String sql = """
                 select s.setId, s.setName, s.setDescription, s.setCategory,
+                u.userId, u.firstName, u.lastName,
                 (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
-                from Sets s INNER JOIN Users on s.userId = Users.userId where s.userId = ?;
+                from Sets s, Users u where s.userId = u.userId and s.userId = ?;
         """;
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -126,8 +126,9 @@ public class SetService {
     public List <Set> getSetsByCategory(String category) throws SQLException {
         String sql =  """
                 select s.setId, s.setName, s.setDescription, s.setCategory,
+                u.userId, u.firstName, u.lastName,
                 (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
-                from Sets s INNER JOIN Users on s.userId = Users.userId where s.setCategory = ?;
+                from Sets s, Users u where s.userId = u.userId and s.setCategory = ?;
         """;
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -150,8 +151,9 @@ public class SetService {
     public List <Set> getSetsByName(String name) throws SQLException {
         String sql = """
             select s.setId, s.setName, s.setDescription, s.setCategory,
+            u.userId, u.firstName, u.lastName,
             (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
-            from Sets s INNER JOIN Users on s.userId = Users.userId where s.setName = ?;
+            from Sets s, Users u where s.userId = u.userId and s.setName = ?;
         """;
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -173,8 +175,9 @@ public class SetService {
     public List <Set> getNewestSets() throws SQLException {
         String sql = """
                 select s.setId, s.setName, s.setDescription, s.setCategory,
+                u.userId, u.firstName, u.lastName,
                 (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
-                from Sets s INNER JOIN Users on s.userId = Users.userId
+                from Sets s, Users u where s.userId = u.userId
                 ORDER BY s.setId DESC;
         """;
         try (Connection conn = dataSource.getConnection();
