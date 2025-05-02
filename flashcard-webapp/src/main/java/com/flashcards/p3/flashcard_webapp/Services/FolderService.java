@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
 import com.flashcards.p3.flashcard_webapp.models.Folder;
+import com.flashcards.p3.flashcard_webapp.models.Set;
+import com.flashcards.p3.flashcard_webapp.models.User;
 
 @Service
 @SessionScope
@@ -32,8 +35,35 @@ public class FolderService {
      * 
      * @return a list containing all folders owned by the current user.
      */
-    public List<Folder> getFolders() {
-        throw new UnsupportedOperationException("getFoldersByUserId not implemented");
+    public List<Folder> getUserFolders() throws SQLException {
+        final String sql = """
+                SELECT 
+                    f.folderId, f.folderName,
+                    u.userId, u.firstName, u.lastName
+                FROM Folders f, Users u
+                WHERE
+                    f.userId = u.userId and
+                    f.userId = ?;
+        """;
+        
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            pstmt.setString(1, accountService.getLoggedInUser().getUserId());
+            ResultSet rs = pstmt.executeQuery();
+            List<Folder> folders = new ArrayList<>();
+            while (rs.next()) {
+                User folderUser = new User(rs.getString("userId"), 
+                                         rs.getString("firstName"),
+                                         rs.getString("lastName"));
+                List<Set> folderSets = getFolderSets(rs.getString("folderId"));
+                Folder folder = new Folder(rs.getString("folderId"), rs.getString("folderName"), folderUser,
+                                           folderSets.size(), folderSets);
+                folders.add(folder);
+            }
+            return folders;
+        }
+        
     }
 
     /**
@@ -47,6 +77,36 @@ public class FolderService {
         throw new UnsupportedOperationException("getFolderById not implemented");
     }
 
+    private List<Set> getFolderSets(String folderId) throws SQLException {
+        final String sql = """
+                SELECT
+                    s.setId, s.setName, s.setDescription, s.setCategory,
+                    (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards,
+                    u.userId, u.firstName, u.lastName
+                FROM Sets s, Set_Folders sf, Users u
+                WHERE 
+                    s.setId = sf.setId and
+                    s.userId = u.userId and
+                    sf.folderId = ?;
+        """;
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            pstmt.setString(1, folderId);
+            ResultSet rs = pstmt.executeQuery();
+            List<Set> folderSets = new ArrayList<>();
+            while (rs.next()) {
+                User setUser = new User(rs.getString("userId"), 
+                                        rs.getString("firstName"),
+                                        rs.getString("lastName"));
+                Set set = new Set(rs.getString("setId"), setUser, rs.getString("setName"), 
+                                        rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
+                folderSets.add(set);
+            }
+            return folderSets;
+        }
+    }
+
     /**
      * Creates a folder that will belong to the current logged in user.
      * 
@@ -56,7 +116,7 @@ public class FolderService {
      * @throws SQLException if the SQL statement is invalid.
      */
     public boolean addFolder(String folderName) throws SQLException {
-        final String sql = "insert into Folders (userId, folderName) values (?, ?)";
+        final String sql = "insert into Folders (userId, folderName) values (?, ?);";
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement folderStmt = conn.prepareStatement(sql)) {
@@ -82,7 +142,7 @@ public class FolderService {
         if (!folder.getUser().equals(accountService.getLoggedInUser())) {
             throw new IllegalArgumentException("Folder does not belong to user");
         }
-        final String sql = "insert into Set_Folders (setId, folderId) values (?, ?)";
+        final String sql = "insert into Set_Folders (setId, folderId) values (?, ?);";
         try (Connection conn = dataSource.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, setId);
@@ -104,9 +164,9 @@ public class FolderService {
      */
     public boolean setToFavorites(String setId, Boolean isAdd) throws SQLException {
         final String loggedInUserId = accountService.getLoggedInUser().getUserId();
-        final String sql1 = "select setId from Folders where userId = ? and folderName = 'Favorites'";
-        final String sql2 = "insert into Set_Folders (setId, folderId) values (?, ?)";
-        final String sql3 = "delete from Set_Folders where setId = ? and folderId = ?";
+        final String sql1 = "select setId from Folders where userId = ? and folderName = 'Favorites';";
+        final String sql2 = "insert into Set_Folders (setId, folderId) values (?, ?);";
+        final String sql3 = "delete from Set_Folders where setId = ? and folderId = ?;";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt1 = conn.prepareStatement(sql1);
@@ -154,7 +214,7 @@ public class FolderService {
             throw new IllegalArgumentException("Folder does not belong to user");
         } 
 
-        final String sql = "UPDATE Folders SET folderName = ? WHERE folderId = ?";
+        final String sql = "UPDATE Folders SET folderName = ? WHERE folderId = ?;";
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -183,7 +243,7 @@ public class FolderService {
             throw new IllegalArgumentException("Folder does not belong to user");
         }
 
-        final String sql = "DELETE FROM Folders WHERE folderId = ?";
+        final String sql = "DELETE FROM Folders WHERE folderId = ?;";
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {

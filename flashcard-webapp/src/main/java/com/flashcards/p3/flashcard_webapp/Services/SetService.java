@@ -10,13 +10,13 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.object.RdbmsOperation;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
 import com.flashcards.p3.flashcard_webapp.models.Flashcard;
 import com.flashcards.p3.flashcard_webapp.models.Set;
-import com.flashcards.p3.flashcard_webapp.models.fullSet;
+import com.flashcards.p3.flashcard_webapp.models.User;
+import com.flashcards.p3.flashcard_webapp.models.FullSet;
 
 @Service
 @SessionScope
@@ -32,7 +32,7 @@ public class SetService {
 
 
     public boolean addSet(Set newSet, String userId) throws SQLException {
-        final String sql = "insert into Sets (userId, setName, setDescription, setCategory) values (?, ?, ?)";
+        final String sql = "insert into Sets (userId, setName, setDescription, setCategory) values (?, ?, ?);";
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement setStmt = conn.prepareStatement(sql)) {
@@ -47,7 +47,7 @@ public class SetService {
     }
 
     public boolean addFlashcard(Flashcard newCard, String setId) throws SQLException {
-        final String sql = "insert into Flashcards (setId, cardTerm, cardDesc) values (?, ?, ?)";
+        final String sql = "insert into Flashcards (setId, cardTerm, cardDesc) values (?, ?, ?);";
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement cardStmt = conn.prepareStatement(sql)) {
@@ -61,34 +61,35 @@ public class SetService {
         }
     }
 
-    public List <fullSet> constructFullSet(String setId) throws SQLException {
+    public FullSet constructFullSet(String setId) throws SQLException {
 
-        final String sql = "select * from Sets where setId = ?";
+        final String sql = "select * from Sets INNER JOIN Users on Sets.userId = Users.userId where setId = ?;";
 
         try (Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt1 = conn.prepareStatement(sql);
-                ) {
-
-                    //Fetch set info
-                    pstmt1.setString(1, setId);
-                    ResultSet rs1 = pstmt1.executeQuery();
-                    rs1.next();
-                    String[] setInfo = {rs1.getString("setName"), rs1.getString("setDescription"), rs1.getString("setCategory")};
-                    List <Flashcard> cards = getCards(setId);
-
-                    fullSet set = new fullSet(setId, setInfo[0], setInfo[1], setInfo[2], cards);
-                    return List.of(set);
-                
-                }
-            }
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+        ) {
+            //Fetch set info
+            pstmt.setString(1, setId);
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+            User user = new User(rs.getString("userId"), 
+                                    rs.getString("firstName"),
+                                    rs.getString("lastName"));
+            List <Flashcard> cards = getCards(setId);
+            FullSet set = new FullSet(setId, user, rs.getString("setId"),
+                                        rs.getString("setDescription"), rs.getString("setCategory"),
+                                        cards.size(), cards);
+            return set;
+        }
+    }
     
     public List <Flashcard> getCards(String setId) throws SQLException{
-        final String sql = "select * from Flashcards where setId = ?";
+        final String sql = "select * from Flashcards where setId = ?;";
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, setId);
                 ResultSet rs = pstmt.executeQuery();
-                List <Flashcard> setCards = new ArrayList<Flashcard> ();
+                List <Flashcard> setCards = new ArrayList<Flashcard>();
                 while (rs.next()) {
                     Flashcard tempCard = new Flashcard(rs.getString("cardId"), setId, rs.getString("cardTerm"), rs.getString("cardDesc"));
                     setCards.add(tempCard);
@@ -99,15 +100,22 @@ public class SetService {
 
     public List <Set> currentUserSets() throws SQLException {
         String currentUserId = accountService.getLoggedInUser().getUserId();
-        String sql = "select * from Sets where userId = ?";
-
+        String sql = """
+                select s.setId, s.setName, s.setDescription, s.setCategory,
+                (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+                from Sets s INNER JOIN Users on s.userId = Users.userId where s.userId = ?;
+        """;
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, currentUserId);
                 ResultSet rs = pstmt.executeQuery();
                 List <Set> userSets = new ArrayList<Set> ();
                 while (rs.next()) {
-                    Set tempSet = new Set(rs.getString("setId"), rs.getString("setName"), rs.getString("setDescription"), rs.getString("setCategory"));
+                    User tempUser = new User(rs.getString("userId"), 
+                                         rs.getString("firstName"),
+                                         rs.getString("lastName"));
+                    Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"), 
+                                          rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
                     userSets.add(tempSet);
                 }
                 return userSets;
@@ -116,15 +124,22 @@ public class SetService {
     }
 
     public List <Set> getSetsByCategory(String category) throws SQLException {
-        String sql = "select * from Sets where setCategory = ?";
-
+        String sql =  """
+                select s.setId, s.setName, s.setDescription, s.setCategory,
+                (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+                from Sets s INNER JOIN Users on s.userId = Users.userId where s.setCategory = ?;
+        """;
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, category);
                 ResultSet rs = pstmt.executeQuery();
                 List <Set> catSets = new ArrayList<Set> ();
                 while (rs.next()) {
-                    Set tempSet = new Set(rs.getString("setId"), rs.getString("setName"), rs.getString("setDescription"), rs.getString("setCategory"));
+                    User tempUser = new User(rs.getString("userId"), 
+                                         rs.getString("firstName"),
+                                         rs.getString("lastName"));
+                    Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"), 
+                                          rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
                     catSets.add(tempSet);
                 }
                 return catSets;
@@ -133,14 +148,22 @@ public class SetService {
     }
 
     public List <Set> getSetsByName(String name) throws SQLException {
-        String sql = "select * from Sets where setName = ?";
+        String sql = """
+            select s.setId, s.setName, s.setDescription, s.setCategory,
+            (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+            from Sets s INNER JOIN Users on s.userId = Users.userId where s.setName = ?;
+        """;
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, name);
                 ResultSet rs = pstmt.executeQuery();
                 List <Set> nameSets = new ArrayList<Set> ();
                 while (rs.next()) {
-                    Set tempSet = new Set(rs.getString("setId"), rs.getString("setName"), rs.getString("setDescription"), rs.getString("setCategory"));
+                    User tempUser = new User(rs.getString("userId"), 
+                                         rs.getString("firstName"),
+                                         rs.getString("lastName"));
+                    Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"), 
+                                          rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
                     nameSets.add(tempSet);
                 }
                 return nameSets;
@@ -148,13 +171,22 @@ public class SetService {
     }
 
     public List <Set> getNewestSets() throws SQLException {
-        String sql = "select * from Sets order by setId desc";
+        String sql = """
+                select s.setId, s.setName, s.setDescription, s.setCategory,
+                (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+                from Sets s INNER JOIN Users on s.userId = Users.userId
+                ORDER BY s.setId DESC;
+        """;
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 ResultSet rs = pstmt.executeQuery();
                 List <Set> sets = new ArrayList<Set> ();
                 while (rs.next()) {
-                    Set tempSet = new Set(rs.getString("setId"), rs.getString("setName"), rs.getString("setDescription"), rs.getString("setCategory"));
+                    User tempUser = new User(rs.getString("userId"), 
+                                         rs.getString("firstName"),
+                                         rs.getString("lastName"));
+                    Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"), 
+                                          rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
                     sets.add(tempSet);
                 }
                 return sets;
@@ -166,7 +198,7 @@ public class SetService {
                 WITH setIdThree AS (SELECT folderId FROM Set_Folders WHERE setId = ?),
                 folderNames AS (SELECT folderName FROM Folders f LEFT JOIN setIdThree ON setIdThree.folderId = f.folderId)
                 SELECT COUNT(*) AS fav_count FROM folderNames WHERE folderName = "Favorites"
-                """;
+        """;
         
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
