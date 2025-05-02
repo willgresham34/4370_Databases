@@ -212,4 +212,129 @@ public class SetService {
                 return count;
             }
     }
+
+    public boolean updateFlashcardTerm (String cardId, String term) throws SQLException {
+        String sql1 = """
+                WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
+                SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
+                """;
+        String sql2  ="UPDATE Flashcards SET cardTerm = ? WHERE cardId = ?";
+
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+                pstmt1.setString(1, cardId);
+                pstmt2.setString(1, term);
+                pstmt2.setString(2, cardId);
+
+                ResultSet rs1 = pstmt1.executeQuery();
+                rs1.next();
+                String userId = rs1.getString("userId");
+
+                if (userId.equals(accountService.getLoggedInUser().getUserId())) {
+                    pstmt2.executeUpdate();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+    }
+
+    public boolean updateFlashcardDesc (String cardId, String desc) throws SQLException {
+        String sql1 = """
+                WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
+                SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
+                """;
+        String sql2  = "UPDATE Flashcards SET cardDesc = ? WHERE cardId = ?";
+
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+                pstmt1.setString(1, cardId);
+                pstmt2.setString(1, desc);
+                pstmt2.setString(2, cardId);
+
+                ResultSet rs1 = pstmt1.executeQuery();
+                rs1.next();
+                String userId = rs1.getString("userId");
+
+                if (userId.equals(accountService.getLoggedInUser().getUserId())) {
+                    pstmt2.executeUpdate();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+    }
+
+    public boolean updateSetName (String setId, String name) throws SQLException {
+        String sql1 = "SELECT userId from Sets Where setId = ?";
+        String sql2 = "UPDATE Sets SET setName = ? WHERE setId = ?";
+
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+                pstmt1.setString(1, setId);
+                pstmt2.setString(1, name);
+                pstmt2.setString(2, setId);
+
+                ResultSet rs1 = pstmt1.executeQuery();
+                rs1.next();
+                String userId = rs1.getString("userId");
+
+                if(userId.equals(accountService.getLoggedInUser().getUserId())) {
+                    pstmt2.executeUpdate();
+                    return true;
+                } else {
+                    return false;
+                }
+        }
+    }
+
+    public boolean updateSetDescription (String setId, String desc) throws SQLException {
+        String sql1 = "SELECT userId from Sets Where setId = ?";
+        String sql2 = "UPDATE Sets SET setDescription = ? WHERE setId = ?";
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+                pstmt1.setString(1, setId);
+                pstmt2.setString(1, desc);
+                pstmt2.setString(2, setId);
+
+                ResultSet rs1 = pstmt1.executeQuery();
+                rs1.next();
+                String userId = rs1.getString("userId");
+
+                if(userId.equals(accountService.getLoggedInUser().getUserId())) {
+                    pstmt2.executeUpdate();
+                    return true;
+                } else {
+                    return false;
+                }
+        }
+    }
+
+    public boolean updateSetCategory (String setId, String category) throws SQLException {
+        String sql1 = "SELECT userId from Sets Where setId = ?";
+        String sql2 = "UPDATE Sets SET setCateogry = ? WHERE setId = ?";
+
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
+                pstmt1.setString(1, setId);
+                pstmt2.setString(1, category);
+                pstmt2.setString(2, setId);
+
+                ResultSet rs1 = pstmt1.executeQuery();
+                rs1.next();
+                String userId = rs1.getString("userId");
+
+                if(userId.equals(accountService.getLoggedInUser().getUserId())) {
+                    pstmt2.executeUpdate();
+                    return true;
+                } else {
+                    return false;
+                }
+        }
+    }
 }
