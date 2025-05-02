@@ -316,7 +316,7 @@ public class SetService {
 
     public boolean updateSetCategory (String setId, String category) throws SQLException {
         String sql1 = "SELECT userId from Sets Where setId = ?";
-        String sql2 = "UPDATE Sets SET setCateogry = ? WHERE setId = ?";
+        String sql2 = "UPDATE Sets SET setCategory = ? WHERE setId = ?";
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement pstmt1 = conn.prepareStatement(sql1);
