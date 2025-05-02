@@ -337,4 +337,25 @@ public class SetService {
                 }
         }
     }
+
+    public boolean deleteSet(String setId) throws SQLException{
+        String sql = "DELETE FROM Sets WHERE setId = ?";
+
+        try (Connection conn = dataSource.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, setId);
+                int rowsAffected = pstmt.executeUpdate();
+                return rowsAffected > 0;
+            }
+    }
+
+    public boolean deleteFlashcard(String cardId) throws SQLException{
+        String sql = "DELETE FROM Flashcards WHERE cardId = ?";
+        try (Connection conn = dataSource.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, cardId);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
 }
