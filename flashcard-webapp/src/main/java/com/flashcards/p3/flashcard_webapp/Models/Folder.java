@@ -23,6 +23,11 @@ public class Folder {
     private final User user;
 
     /**
+     * The number of sets contained in the folder
+     */
+    private final int numSets;
+
+    /**
      * A list of basic sets contained in the folder.
      */
     private final List<Set> sets;
@@ -32,13 +37,15 @@ public class Folder {
      * 
      * @param folderId      the unique identifier of the folder
      * @param folderName    the name of the folder
-     * @param user          the user who created the folder
+     * @param user          the user who created the folder (unused)
+     * @param numSets       the number of sets within the folder
      * @param sets          the list of sets within the folder
      */
-    public Folder(String folderId, String folderName, User user, List<Set> sets) {
+    public Folder(String folderId, String folderName, User user, int numSets, List<Set> sets) {
         this.folderId = folderId;
         this.folderName = folderName;
         this.user = user;
+        this.numSets = numSets;
         this.sets = sets;
     }
 
@@ -55,6 +62,9 @@ public class Folder {
         return user;
     }
 
+    public int getNumSets() {
+        return numSets;
+    }
 
     public List<Set> getSets() {
         return List.copyOf(sets);
