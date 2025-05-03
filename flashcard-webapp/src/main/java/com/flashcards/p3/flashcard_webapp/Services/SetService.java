@@ -340,22 +340,47 @@ public class SetService {
 
     public boolean deleteSet(String setId) throws SQLException{
         String sql = "DELETE FROM Sets WHERE setId = ?";
+        String sql2 = "SELECT userId from Sets Where setId = ?";
 
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
                 pstmt.setString(1, setId);
-                int rowsAffected = pstmt.executeUpdate();
-                return rowsAffected > 0;
+                pstmt2.setString(1, setId);
+                ResultSet rs = pstmt2.executeQuery();
+                rs.next();
+                String userId = rs.getString("userId");
+                if (userId.equals(accountService.getLoggedInUser().getUserId())) {
+                    int rowsAffected = pstmt.executeUpdate();
+                    return rowsAffected > 0;
+                } else {
+                    throw new IllegalArgumentException("cannot delete another user's set");
+                }
             }
     }
 
     public boolean deleteFlashcard(String cardId) throws SQLException{
         String sql = "DELETE FROM Flashcards WHERE cardId = ?";
+        String sql1 = """
+                WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
+                SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
+                """;
         try (Connection conn = dataSource.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, cardId);
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            PreparedStatement pstmt2 = conn.prepareStatement(sql1)) {
+
+                pstmt.setString(1, cardId);
+                pstmt2.setString(1, cardId);
+
+                ResultSet rs = pstmt2.executeQuery();
+                rs.next();
+                String userId = rs.getString("userId");
+                if (userId.equals(accountService.getLoggedInUser().getUserId())) {
+                    int rowsAffected = pstmt.executeUpdate();
+                    return rowsAffected > 0;
+                } else {
+                    throw new IllegalArgumentException("cannot delete another user's card");
+                }
         }
     }
 }
