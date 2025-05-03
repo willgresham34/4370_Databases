@@ -72,9 +72,10 @@ public class SetService {
             rs.next();
             User user = new User(rs.getString("userId"),
                     rs.getString("firstName"),
-                    rs.getString("lastName"));
+                    rs.getString("lastName"),
+                    rs.getString("username"));
             List<Flashcard> cards = getCards(setId);
-            FullSet set = new FullSet(setId, user, rs.getString("setId"),
+            FullSet set = new FullSet(setId, user, rs.getString("setName"),
                     rs.getString("setDescription"), rs.getString("setCategory"),
                     cards.size(), cards);
             return set;
@@ -113,7 +114,8 @@ public class SetService {
             while (rs.next()) {
                 User tempUser = new User(rs.getString("userId"),
                         rs.getString("firstName"),
-                        rs.getString("lastName"));
+                        rs.getString("lastName"),
+                        rs.getString("username"));
                 Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
                         rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
                 userSets.add(tempSet);
@@ -137,7 +139,8 @@ public class SetService {
             while (rs.next()) {
                 User tempUser = new User(rs.getString("userId"),
                         rs.getString("firstName"),
-                        rs.getString("lastName"));
+                        rs.getString("lastName"),
+                        rs.getString("username"));
                 Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
                         rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
                 catSets.add(tempSet);
@@ -161,7 +164,8 @@ public class SetService {
             while (rs.next()) {
                 User tempUser = new User(rs.getString("userId"),
                         rs.getString("firstName"),
-                        rs.getString("lastName"));
+                        rs.getString("lastName"),
+                        rs.getString("username"));
                 Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
                         rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
                 nameSets.add(tempSet);
@@ -185,7 +189,8 @@ public class SetService {
             while (rs.next()) {
                 User tempUser = new User(rs.getString("userId"),
                         rs.getString("firstName"),
-                        rs.getString("lastName"));
+                        rs.getString("lastName"),
+                        rs.getString("username"));
                 Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
                         rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
                 sets.add(tempSet);

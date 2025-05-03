@@ -39,7 +39,7 @@ public class HomeController {
 
             model.addAttribute("sets", slice);
             model.addAttribute("currentPage", page);
-            model.addAttribute("currentPageDisplay", page + 1);
+            model.addAttribute("currentDisplayPage", page + 1);
             model.addAttribute("totalPages", totalPages);
             model.addAttribute("hasPrevious", page > 0);
             model.addAttribute("hasNext", page < totalPages - 1);

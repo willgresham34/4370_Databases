@@ -62,8 +62,9 @@ public class AccountService {
                         String userId = rs.getString("userId");
                         String firstName = rs.getString("firstName");
                         String lastName = rs.getString("lastName");
+                        String username = rs.getString("username");
 
-                        User loggedInUser = new User(userId, firstName, lastName);
+                        User loggedInUser = new User(userId, firstName, lastName, username);
                         this.loggedInUser = loggedInUser;
                     }
                     return isPassMatch && loggedInUser != null;

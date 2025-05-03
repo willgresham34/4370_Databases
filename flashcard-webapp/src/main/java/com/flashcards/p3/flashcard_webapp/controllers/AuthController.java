@@ -6,12 +6,7 @@ import org.springframework.ui.Model;
 import com.flashcards.p3.flashcard_webapp.dtos.*;
 
 import com.flashcards.p3.flashcard_webapp.services.AccountService;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

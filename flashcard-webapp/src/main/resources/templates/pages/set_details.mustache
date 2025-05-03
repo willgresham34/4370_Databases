@@ -2,16 +2,30 @@
   {{$title}}Set Details{{/title}}
 
   {{$body}}
-    <div>
-        <h1 class="details-header">Set Details</h1>
+    <div class="set-details-header">
+        <div class="set-preview">
+          <div class="set-prev-header">
+            <h2 class="set-title">{{name}}</h2>
+            <div class="set-sub-title">
+              <div class="split">
+                  <span class="set-author">By: {{firstName}} {{lastName}}</span>
+              </div>
+              <div class="split">
+                  <span class="set-category">{{category}}</span>
+              </div>
+            </div>     
+          </div>
+          <div class="set-prev-body">
+            <p class="set-description">{{description}}</p>
+          </div>
+        </div>
     </div>
-
-    <div class="">
-        <ul>
+    <div class="fc-container">
+        <div>
                 {{#flashcards}}
                         {{> fragments/flashcard }}
                 {{/flashcards}}
-        </ul>  
+        </div>  
     <div>
   {{/body}}
 {{/base}}

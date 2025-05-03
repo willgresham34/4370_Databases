@@ -32,6 +32,7 @@ public class SetDetailsController {
             model.addAttribute("description", set.getDesc());
             model.addAttribute("category", set.getCategory());
             model.addAttribute("flashcards", set.getCards());
+            model.addAttribute("fullName", set.getUser().getFullName());
         } catch (Exception e) {
             model.addAttribute("error", e.toString());
         }
