@@ -40,7 +40,7 @@ public class FolderService {
         final String sql = """
                         SELECT
                             f.folderId, f.folderName,
-                            u.userId, u.firstName, u.lastName
+                            u.userId, u.firstName, u.lastName, u.username
                         FROM Folders f, Users u
                         WHERE
                             f.userId = u.userId and
@@ -83,7 +83,7 @@ public class FolderService {
                         SELECT
                             s.setId, s.setName, s.setDescription, s.setCategory,
                             (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards,
-                            u.userId, u.firstName, u.lastName
+                            u.userId, u.firstName, u.lastName, u.username
                         FROM Sets s, Set_Folders sf, Users u
                         WHERE
                             s.setId = sf.setId and

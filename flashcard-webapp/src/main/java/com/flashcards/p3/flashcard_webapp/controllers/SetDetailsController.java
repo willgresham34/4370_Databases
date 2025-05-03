@@ -33,6 +33,7 @@ public class SetDetailsController {
             model.addAttribute("category", set.getCategory());
             model.addAttribute("flashcards", set.getCards());
             model.addAttribute("fullName", set.getUser().getFullName());
+            model.addAttribute("userId", set.getUser().getUserId());
         } catch (Exception e) {
             model.addAttribute("error", e.toString());
         }

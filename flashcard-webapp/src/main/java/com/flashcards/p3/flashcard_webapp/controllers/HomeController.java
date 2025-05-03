@@ -5,12 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-
-import com.flashcards.p3.flashcard_webapp.services.AccountService;
 import com.flashcards.p3.flashcard_webapp.services.SetService;
 import com.flashcards.p3.flashcard_webapp.models.Set;
 
@@ -39,7 +34,7 @@ public class HomeController {
 
             model.addAttribute("sets", slice);
             model.addAttribute("currentPage", page);
-            model.addAttribute("currentDisplayPage", page + 1);
+            model.addAttribute("currentPageDisplay", page + 1);
             model.addAttribute("totalPages", totalPages);
             model.addAttribute("hasPrevious", page > 0);
             model.addAttribute("hasNext", page < totalPages - 1);

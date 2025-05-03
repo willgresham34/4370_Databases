@@ -2,7 +2,7 @@
   <a href="/" class="navbar-title">FlashCards</a>
   <ul class="nav-links">
     {{#authenticated}}
-      <li><a class="nav-button" href="/profile">Profile</a></li>
+      <li><a class="nav-button" href="/profile/currentUser">Profile</a></li>
       <li>
         <form action="/logout" method="post" style="display:inline">
           <button type="submit" class="nav-button">Logout</button>

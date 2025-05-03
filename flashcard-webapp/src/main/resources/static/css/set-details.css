@@ -104,6 +104,11 @@
   color: #666;
 }
 
+.set-author a {
+  text-decoration: underline;
+  color: #0066cc;
+}
+
 .set-prev-body {
   margin-top: 1rem;
 }

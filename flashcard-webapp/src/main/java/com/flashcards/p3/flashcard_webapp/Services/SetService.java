@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
+import com.flashcards.p3.flashcard_webapp.dtos.SetCreateDto;
 import com.flashcards.p3.flashcard_webapp.models.Flashcard;
 import com.flashcards.p3.flashcard_webapp.models.Set;
 import com.flashcards.p3.flashcard_webapp.models.User;
@@ -30,8 +31,8 @@ public class SetService {
         this.accountService = accountService;
     }
 
-    public boolean addSet(Set newSet, String userId) throws SQLException {
-        final String sql = "insert into Sets (userId, setName, setDescription, setCategory) values (?, ?, ?);";
+    public void addSet(SetCreateDto newSet, String userId) throws SQLException {
+        final String sql = "insert into Sets (userId, setName, setDescription, setCategory) values (?, ?, ?, ?);";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement setStmt = conn.prepareStatement(sql)) {
@@ -40,8 +41,7 @@ public class SetService {
             setStmt.setString(3, newSet.getDesc());
             setStmt.setString(4, newSet.getCategory());
 
-            int rowsAffected = setStmt.executeUpdate();
-            return rowsAffected > 0;
+            setStmt.executeUpdate();
         }
     }
 
@@ -102,7 +102,7 @@ public class SetService {
         String currentUserId = accountService.getLoggedInUser().getUserId();
         String sql = """
                         select s.setId, s.setName, s.setDescription, s.setCategory,
-                        u.userId, u.firstName, u.lastName,
+                        u.userId, u.firstName, u.lastName, u.username,
                         (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
                         from Sets s, Users u where s.userId = u.userId and s.userId = ?;
                 """;
@@ -127,7 +127,7 @@ public class SetService {
     public List<Set> getSetsByCategory(String category) throws SQLException {
         String sql = """
                         select s.setId, s.setName, s.setDescription, s.setCategory,
-                        u.userId, u.firstName, u.lastName,
+                        u.userId, u.firstName, u.lastName, u.username,
                         (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
                         from Sets s, Users u where s.userId = u.userId and s.setCategory = ?;
                 """;
@@ -152,7 +152,7 @@ public class SetService {
     public List<Set> getSetsByName(String name) throws SQLException {
         String sql = """
                     select s.setId, s.setName, s.setDescription, s.setCategory,
-                    u.userId, u.firstName, u.lastName,
+                    u.userId, u.firstName, u.lastName, u.username
                     (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
                     from Sets s, Users u where s.userId = u.userId and s.setName = ?;
                 """;
@@ -177,7 +177,7 @@ public class SetService {
     public List<Set> getNewestSets() throws SQLException {
         String sql = """
                         select s.setId, s.setName, s.setDescription, s.setCategory,
-                        u.userId, u.firstName, u.lastName,
+                        u.userId, u.firstName, u.lastName, u.username,
                         (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
                         from Sets s, Users u where s.userId = u.userId
                         ORDER BY s.setId DESC;
