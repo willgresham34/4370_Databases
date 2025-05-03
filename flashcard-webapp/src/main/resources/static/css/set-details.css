@@ -1,25 +1,49 @@
+.fc-containter {
+  max-height: 70vh;
+  overflow-y: scroll;
+}
+
 .flashcard {
-  border: 1px solid #1a1818;
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 16px auto;
+  max-width: 800px;
+}
+
+.flashcard .side {
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.flashcard .term {
+  flex: 2;
+  background: #fafafa;
+  color: #2c3e50;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flashcard .divider {
+  width: 1px;
+  background: #e0e0e0;
+}
+
+.flashcard .desc {
+  flex: 3;
+  background: #ffffff;
+  color: #4a4a4a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .details-header {
-  font-size: xx-large;
+  font-size: 1.75rem;
+  color: #2c3e50;
+  margin-bottom: 0.5em;
 }
-/* .flashcard .side {
-  flex: 1;
-  padding: 16px;
-  box-sizing: border-box;
-}
-.flashcard .divider {
-  width: 1px;
-  background-color: #ccc;
-}
-.flashcard .term {
-  background-color: #f9f9f9;
-  font-weight: bold;
-  text-align: center;
-}
-.flashcard .desc {
-  background-color: #fff;
-  text-align: center;
-} */

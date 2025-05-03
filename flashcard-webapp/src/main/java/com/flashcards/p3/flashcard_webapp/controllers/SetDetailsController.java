@@ -31,7 +31,7 @@ public class SetDetailsController {
             model.addAttribute("name", set.getName());
             model.addAttribute("description", set.getDesc());
             model.addAttribute("category", set.getCategory());
-            model.addAttribute("cards", set.getCards());
+            model.addAttribute("flashcards", set.getCards());
         } catch (Exception e) {
             model.addAttribute("error", e.toString());
         }

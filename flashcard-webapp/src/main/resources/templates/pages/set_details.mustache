@@ -1,11 +1,17 @@
-<div>
-    <h1 class="details-header">Set Details</h1>
-</div>
+{{< base}}
+  {{$title}}Set Details{{/title}}
 
-<div class="card-container">
-    <ul>
-            {{#cards}}
-                    {{> fragments/flashcard }}
-            {{/cards}}
-    </ul>  
-<div>
+  {{$body}}
+    <div>
+        <h1 class="details-header">Set Details</h1>
+    </div>
+
+    <div class="">
+        <ul>
+                {{#flashcards}}
+                        {{> fragments/flashcard }}
+                {{/flashcards}}
+        </ul>  
+    <div>
+  {{/body}}
+{{/base}}

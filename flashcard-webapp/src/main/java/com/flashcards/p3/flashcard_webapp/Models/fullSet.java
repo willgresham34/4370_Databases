@@ -6,12 +6,14 @@ public class FullSet extends Set {
 
     private final List<Flashcard> cards;
 
-    public FullSet(String setId, String name, String desc, String category, List<Flashcard> cards) {
-        super(setId, name, desc, category);
+    public FullSet(String setId, User user, String name, String desc, String category, int numCards,
+            List<Flashcard> cards) {
+        super(setId, user, name, desc, category, numCards);
         this.cards = cards;
     }
 
     public List<Flashcard> getCards() {
         return List.copyOf(cards);
     }
+
 }
