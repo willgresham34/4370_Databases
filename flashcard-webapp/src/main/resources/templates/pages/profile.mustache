@@ -1,0 +1,122 @@
+{{< base}}
+  {{$title}}My Profile{{/title}}
+
+  {{$body}}
+  <div class="user-container">
+    {{> fragments/error_message}}
+    <!-- User Info -->
+   <div class="profile-info">
+      <h2 class="profile-name">{{firstName}} {{lastName}}</h2>
+      <p class="profile-username">@{{username}}</p>
+      <div>Total Sets: {{setCount}}</div>
+    </div> 
+  </div>
+
+    <!-- Folder Grid… -->
+  <section class="folder-section">
+    <h3>Your Folders</h3>
+
+    {{#hasFolders}}
+      <div class="folder-grid">
+        {{#folders}}
+          {{> fragments/folder}}
+        {{/folders}}
+
+        <!-- Always put the “+” tile at the end -->
+        <div class="folder-item">
+          <div class="folder-card">
+            <button class="" title="Create a new folder" onclick="openCreateFolderModal()">+</button>
+          </div>
+        </div>
+    {{/hasFolders}}
+
+    {{^hasFolders}}
+      <div class="no-folders">
+        <p>You haven’t created any folders yet.</p>
+        <div class="add-set-button">
+          <button 
+            class="add-set-btn" 
+            title="Create a new folder"
+            onclick="openCreateFolderModal()"
+          >+</button>
+        </div>
+      </div>
+    {{/hasFolders}}
+
+  </section>
+
+
+    <!-- Their Sets -->
+    <section class="profile-sets">
+      <h3>Your Sets</h3>
+      <div class="set-list">
+        {{#sets}}
+          {{> fragments/set_preview}}
+        {{/sets}}
+        {{^sets}}
+          <p>You haven’t created any sets yet.</p>
+        {{/sets}}
+        <div class="add-set-button">
+          <button type="button" class="add-set-btn" onclick="openCreateSetModal()">+</button>
+        </div>
+      </div>
+
+      
+    </section>
+  </div>
+
+  <div id="createSetModal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <button class="modal-close" onclick="closeCreateSetModal()">&times;</button>
+      <h2>Create New Set</h2>
+      <form action="/profile/create-set" method="post" class="set-form">
+        <div class="form-group">
+          <label for="setName">Name</label>
+          <input id="setName" name="setName" type="text" required />
+        </div>
+        <div class="form-group">
+          <label for="setDescription">Description</label>
+          <textarea id="setDescription" name="setDescription"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="setCategory">Category</label>
+          <input id="setCategory" name="setCategory" type="text" />
+        </div>
+        <button type="submit" class="btn btn-primary">Create Set</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="createFolderModal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <button class="modal-close" onclick="closeCreateFolderModal()">&times;</button>
+      <h2>Create New Folder</h2>
+      <form action="/profile/create-folder" method="post" class="set-form">
+        <div class="form-group">
+          <label for="folderName">Name</label>
+          <input id="folderName" name="folderName" type="text" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Create Folder</button>
+      </form>
+    </div>
+  </div>
+
+
+  <script>
+    function openCreateSetModal(){
+      document.getElementById('createSetModal').style.display = 'flex';
+    }
+    function closeCreateSetModal(){
+      document.getElementById('createSetModal').style.display = 'none';
+    }
+
+    function openCreateFolderModal(){
+      document.getElementById('createFolderModal').style.display = 'flex';
+    }
+    function closeCreateFolderModal(){
+      document.getElementById('createFolderModal').style.display = 'none';
+    }
+
+  </script>
+  {{/body}}
+{{/base}}

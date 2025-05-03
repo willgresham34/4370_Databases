@@ -5,19 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sound.midi.SysexMessage;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.SessionScope;
 
 import com.flashcards.p3.flashcard_webapp.dtos.LoginUserDto;
 import com.flashcards.p3.flashcard_webapp.dtos.RegisterUserDto;
 import com.flashcards.p3.flashcard_webapp.models.User;
 
 @Service
-@SessionScope
 public class AccountService {
     private final DataSource dataSource;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -33,43 +32,48 @@ public class AccountService {
         final String sql1 = "insert into Users (username, password, firstName, lastName) values (?, ?, ?, ?)";
 
         try (Connection conn = dataSource.getConnection();
-            PreparedStatement registerStmt = conn.prepareStatement(sql1)) {
-                registerStmt.setString(1, user.getUsername());
-                registerStmt.setString(2, passwordEncoder.encode(user.getPassword()));
-                registerStmt.setString(3, user.getFirstName());
-                registerStmt.setString(4, user.getLastName());
+                PreparedStatement registerStmt = conn.prepareStatement(sql1)) {
+            registerStmt.setString(1, user.getUsername());
+            registerStmt.setString(2, passwordEncoder.encode(user.getPassword()));
+            registerStmt.setString(3, user.getFirstName());
+            registerStmt.setString(4, user.getLastName());
 
-                int rowsAffected = registerStmt.executeUpdate();
-                return rowsAffected > 0;
+            int rowsAffected = registerStmt.executeUpdate();
+            return rowsAffected > 0;
         }
     }
 
-    public boolean loginUser(LoginUserDto user) throws SQLException{
+    public boolean loginUser(LoginUserDto user) throws SQLException {
 
         final String sql = "select * from Users where username = ?";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                
-                    try(ResultSet rs = pstmt.executeQuery()) {
 
-                        while (rs.next()) {
-                            String storedPasswordHash = rs.getString("password");
-                            boolean isPassMatch = passwordEncoder.matches(user.getPassword(), storedPasswordHash);
+            pstmt.setString(1, user.getUsername());
 
-                            if (isPassMatch) {
-                                String userId = rs.getString("userId");
-                                String firstName = rs.getString("firstName");
-                                String lastName = rs.getString("lastName");
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-                                User loggedInUser = new User(userId, firstName, lastName);
-                                this.loggedInUser = loggedInUser;
-                            }
-                            return isPassMatch;
-                        }
+                while (rs.next()) {
+                    String storedPasswordHash = rs.getString("password");
+                    boolean isPassMatch = passwordEncoder.matches(user.getPassword(), storedPasswordHash);
+
+                    if (isPassMatch) {
+                        String userId = rs.getString("userId");
+                        String firstName = rs.getString("firstName");
+                        String lastName = rs.getString("lastName");
+                        String username = rs.getString("username");
+
+                        User loggedInUser = new User(userId, firstName, lastName, username);
+                        this.loggedInUser = loggedInUser;
                     }
+                    return isPassMatch && loggedInUser != null;
                 }
-                return false;
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
+        }
+        return false;
     }
 
     public void unAuthenticate() {
@@ -78,5 +82,9 @@ public class AccountService {
 
     public User getLoggedInUser() {
         return loggedInUser;
+    }
+
+    public boolean isAuthenticated() {
+        return loggedInUser != null;
     }
 }

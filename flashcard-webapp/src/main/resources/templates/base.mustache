@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{title}}</title>
-    <link rel="stylesheet" href="/css/styles.css">
+  <meta charset="UTF-8">
+  <title>{{$title}}Flashcards{{/title}}</title>
+  <link rel="stylesheet" href="/css/styles.css">
+    {{#pageCss}}
+    <link rel="stylesheet" href="{{pageCss}}">
+    {{/pageCss}}
 </head>
 <body>
-
-<header>
-    {{> fragments/header}}
-</header>
-
-<main>
-    {{{body}}}
-</main>
-
-<footer>
-    {{> fragments/footer}}
-</footer>
-
+  <header>{{> fragments/header}}</header>
+  <main>
+  {{$body}}
+    <p>Oops, no content was provided.</p>
+  {{/body}}
+  </main>
+  <footer>{{> fragments/footer}}</footer>
 </body>
 </html>

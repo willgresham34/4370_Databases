@@ -1,0 +1,31 @@
+{{< base}}
+  {{$title}}Set Details{{/title}}
+
+  {{$body}}
+    <div class="set-details-header">
+        <div class="set-preview">
+          <div class="set-prev-header">
+            <h2 class="set-title">{{name}}</h2>
+            <div class="set-sub-title">
+              <div class="split">
+                  <span class="set-author">By: <a href="/profile/viewUser?userId={{userId}}">{{fullName}}</a></span>
+              </div>
+              <div class="split">
+                  <span class="set-category">{{category}}</span>
+              </div>
+            </div>     
+          </div>
+          <div class="set-prev-body">
+            <p class="set-description">{{description}}</p>
+          </div>
+        </div>
+    </div>
+    <div class="fc-container">
+        <div>
+                {{#flashcards}}
+                        {{> fragments/flashcard }}
+                {{/flashcards}}
+        </div>  
+    <div>
+  {{/body}}
+{{/base}}

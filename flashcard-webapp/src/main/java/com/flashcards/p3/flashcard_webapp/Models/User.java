@@ -4,11 +4,13 @@ public class User {
     private final String userId;
     private final String firstName;
     private final String lastName;
+    private final String username;
 
-    public User(String userId, String firstName, String lastName) {
+    public User(String userId, String firstName, String lastName, String username) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.username = username;
     }
 
     public String getUserId() {
@@ -21,6 +23,10 @@ public class User {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getFullName() {
