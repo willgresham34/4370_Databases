@@ -6,7 +6,7 @@ as well as getFoldersByUserId(String userId)
 It is used at: http://localhost:8080/profile/currentUser */
 SELECT 
     f.folderId, f.folderName,
-    u.userId, u.firstName, u.lastName
+    u.userId, u.firstName, u.lastName, u.username
 FROM 
     Folders f, Users u
 WHERE
@@ -16,7 +16,7 @@ WHERE
 /* This query combines data from the Folders and Users tables
 to return the folder, and the user who created it, with the
 given folderId.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/view-folder?folderId=() */
 SELECT
     f.folderId, f.folderName,
     u.userId, u.firstName, u.lastName, u.username
@@ -28,11 +28,11 @@ WHERE
 /* This query combines data from the Sets, Set_Folders, and Users 
 tables to return a list of every set, including their flashcard count,
 contained within the folder with the given folderId.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/view-folder?folderId=() */
 SELECT
     s.setId, s.setName, s.setDescription, s.setCategory,
     (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards,
-    u.userId, u.firstName, u.lastName
+    u.userId, u.firstName, u.lastName, u.username
 FROM Sets s, Set_Folders sf, Users u
 WHERE 
     s.setId = sf.setId and
@@ -44,19 +44,21 @@ It is used at: http://localhost:8080/profile/currentUser */
 insert into Folders (userId, folderName) values (?, ?);
 
 /* This query adds a new set to a given folder.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/view-folder?folderId=() */
 insert into Set_Folders (setId, folderId) values (?, ?);
 
 /* This query updates the folder information for a given folder.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/view-folder?folderId=() */
 UPDATE Folders SET folderName = ? WHERE folderId = ?;
 
 /* This folder deletes the given folder from the Folders table.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/view-folder?folderId=()
+if the user owns the given folder. */
 DELETE FROM Folders WHERE folderId = ?;
 
 /* This query deletes the given set from a given folder.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/view-folder?folderId=()
+if the user owns the given folder. */
 DELETE FROM Set_Folders WHERE setId = ? AND folderId = ?;
 
 /* This query combines data from the Sets and Users tables to return 
@@ -66,8 +68,8 @@ select * from Sets s, Users u where s.userId = u.userId and setId = ?;
 
 /* This query returns Flashcard information for all flashcards 
 belonging to the set with the given setId. 
-It is used at: <insert path here> 
-It is (also) used internally by other methods in SetService.java.*/
+It is used at: http://localhost:8080/set-details?setId=() 
+It is also used internally by other methods in SetService.java.*/
 select * from Flashcards where setId = ?;
 
 /* This query combines data from the Sets and Users tables to return 
@@ -75,68 +77,75 @@ a list of every set, including flashcard count and user information,
 created by the user specified by s.userId.
 It is used at: http://localhost:8080/profile/currentUser */
 select s.setId, s.setName, s.setDescription, s.setCategory,
-u.userId, u.firstName, u.lastName,
+u.userId, u.firstName, u.lastName, u.username,
 (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
 from Sets s, Users u where s.userId = u.userId and s.userId = ?;
 
-/* This query combines data from the Sets and Users tables to return 
-a list of every set, including flashcard count and user information,
-that has the setCategory specified.
-It is used at: <insert path here> */
-select s.setId, s.setName, s.setDescription, s.setCategory,
-u.userId, u.firstName, u.lastName,
-(SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
-from Sets s, Users u where s.userId = u.userId and s.setCategory = ?;
+-- /* This query combines data from the Sets and Users tables to return 
+-- a list of every set, including flashcard count and user information,
+-- that has the setCategory specified.
+-- It is used at: <insert path here> */
+-- select s.setId, s.setName, s.setDescription, s.setCategory,
+-- u.userId, u.firstName, u.lastName, u.username,
+-- (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+-- from Sets s, Users u where s.userId = u.userId and s.setCategory = ?;
 
-/* This query combines data from the Sets and Users tables to return 
-a list of every set, including flashcard count and user information,
-that has the setName specified.
-It is used at: <insert path here> */
-select s.setId, s.setName, s.setDescription, s.setCategory,
-u.userId, u.firstName, u.lastName,
-(SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
-from Sets s, Users u where s.userId = u.userId and s.setName = ?;
+-- /* This query combines data from the Sets and Users tables to return 
+-- a list of every set, including flashcard count and user information,
+-- that has the setName specified.
+-- It is used at: <insert path here> */
+-- select s.setId, s.setName, s.setDescription, s.setCategory,
+-- u.userId, u.firstName, u.lastName, u.username,
+-- (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+-- from Sets s, Users u where s.userId = u.userId and s.setName = ?;
 
 /* This query combines data from the Sets and Users tables to return 
 a list of every set, including flashcard count and user information,
 ordered by newest to oldest.
 It is used at: http://localhost:8080 (the home page) */
 select s.setId, s.setName, s.setDescription, s.setCategory,
-u.userId, u.firstName, u.lastName,
+u.userId, u.firstName, u.lastName, u.username,
 (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
 from Sets s, Users u where s.userId = u.userId
 ORDER BY s.setId DESC;
 
 /* This query adds a new set into the Sets table.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/profile/currentUser */
 insert into Sets (userId, setName, setDescription, setCategory) values (?, ?, ?, ?);
 
 /* This query adds a new flashcard belonging to the given set into the Flashcards table
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/set-details?setId=() 
+if the user owns the given set. */
 insert into Flashcards (setId, cardTerm, cardDesc) values (?, ?, ?);
 
 /* This query finds the userId associated with a flashcard by
 joining it with the sets table.
-It is used at: <insert path here> */
+It is used internally for integrity contraints associated with
+modifying a set that isn't owned by you. */
 WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
 SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
 
 /* This query updates the given flashcard with new term and description.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/set-details?setId=() 
+if the user owns the given set. */
 UPDATE Flashcards SET cardTerm = ?, cardDesc = ? WHERE cardId = ?
 
 /* This query returns the userId associated with a given set.
-It is used at: <insert path here> */
+It is used internally for integrity contraints associated with
+modifying a set that isn't owned by you. */
 SELECT userId from Sets Where setId = ?
 
 /* This query updates the given set with new name, description, and category.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/set-details?setId=() 
+if the user owns the given set. */
 UPDATE Sets SET setName = ?, setDescription = ?, setCategory = ? WHERE setId = ?
 
 /* This query deletes the given set.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/set-details?setId=() 
+if the user owns the given set. */
 DELETE FROM Sets WHERE setId = ?
 
 /* This query deletes the given flashcard.
-It is used at: <insert path here> */
+It is used at: http://localhost:8080/set-details?setId=() 
+if the user owns the given set. */
 DELETE FROM Flashcards WHERE cardId = ?
