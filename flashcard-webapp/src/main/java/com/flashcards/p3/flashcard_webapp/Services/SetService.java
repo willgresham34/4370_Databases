@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
+import com.flashcards.p3.flashcard_webapp.dtos.FlashcardCreateDto;
 import com.flashcards.p3.flashcard_webapp.dtos.SetCreateDto;
 import com.flashcards.p3.flashcard_webapp.models.Flashcard;
 import com.flashcards.p3.flashcard_webapp.models.Set;
@@ -45,12 +46,12 @@ public class SetService {
         }
     }
 
-    public boolean addFlashcard(Flashcard newCard, String setId) throws SQLException {
+    public boolean addFlashcard(FlashcardCreateDto newCard) throws SQLException {
         final String sql = "insert into Flashcards (setId, cardTerm, cardDesc) values (?, ?, ?);";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement cardStmt = conn.prepareStatement(sql)) {
-            cardStmt.setString(1, setId);
+            cardStmt.setString(1, newCard.getSetId());
             cardStmt.setString(2, newCard.getTerm());
             cardStmt.setString(3, newCard.getcardDesc());
 
