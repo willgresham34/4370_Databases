@@ -3,7 +3,18 @@
   {{$body}}
     <div>
         <div class="folder-details">
-            <h1>folderName</h1>
+            <h1>Folder - {{folderName}} </h1>
+            <button
+              data-folder-name="{{folderName}}"
+              data-folder-id="{{folderId}}"
+              onclick="openEditFolderModal(this)"
+              aria-label="Edit folder"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M12.146.854a.5.5 0 01.708 0l2.292 2.292a.5.5 0 010 .708L6.207 12.793l-2.5.5a.5.5 0 01-.577-.577l.5-2.5L12.146.854z"/>
+                <path fill-rule="evenodd" d="M11.207 2L3 10.207V13h2.793L14 4.793 11.207 2z"/>
+              </svg>
+            </button>
         </div>
         <div class="set-list-container">
         {{> fragments/error_message}}
@@ -14,5 +25,65 @@
         </ul>
         </div>
     </div>
+
+<div id="editFolderModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEditFolderModal()">&times;</button>
+    <h2>Update or Delete Folder</h2>
+
+    <!-- Update form -->
+    <form
+      id="updateFolderForm"
+      action="/update-folder"
+      method="post"
+      class="edit-form"
+    >
+      <input type="hidden" id="editFolderId" name="folderId" value="" />
+
+      <div class="form-group">
+        <label for="editName">Name</label>
+        <input
+          type="text"
+          id="editName"
+          name="folderName"
+          required
+          class="locked-width"
+        />
+      </div>
+
+      <div class="modal-buttons">
+        <button type="button" class="btn btn-secondary" onclick="closeEditFolderModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Update</button>
+      </div>
+    </form>
+    <form
+      id="deleteFolderForm"
+      action="/delete-folder"
+      method="post"
+      class="delete-form"
+    >
+      <input type="hidden" id="deleteFolderId" name="folderId" value="" />
+      <button type="submit" style="margin-top: .5rem">Delete Folder</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openEditFolderModal(button) {
+    const folderId   = button.dataset.folderId;
+    const folderName = button.dataset.folderName;
+
+    document.getElementById('editFolderId').value = folderId;
+    document.getElementById('editName').value     = folderName;
+
+    document.getElementById('deleteFolderId').value = folderId;
+
+    document.getElementById('editFolderModal').style.display = 'flex';
+  }
+
+  function closeEditFolderModal() {
+    document.getElementById('editFolderModal').style.display = 'none';
+  }
+</script>
   {{/body}}
 {{/base}}
