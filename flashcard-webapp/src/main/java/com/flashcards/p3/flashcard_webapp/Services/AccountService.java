@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.sound.midi.SysexMessage;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,5 +85,20 @@ public class AccountService {
 
     public boolean isAuthenticated() {
         return loggedInUser != null;
+    }
+
+    public User getUserById(String userId) throws SQLException {
+        String sql = "SELECT firstName, lastName, username FROM Users where userId = ?";
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, userId);
+                    ResultSet rs = pstmt.executeQuery();
+                    rs.next();
+
+                    User user = new User(userId, rs.getString("firstName"),
+                        rs.getString("lastName"), rs.getString("username"));
+                    return user;
+                }
     }
 }

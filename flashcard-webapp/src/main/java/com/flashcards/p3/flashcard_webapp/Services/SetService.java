@@ -125,6 +125,31 @@ public class SetService {
         }
     }
 
+    public List<Set> getSetsByUserId(String userId) throws SQLException {
+        String sql = """
+                        select s.setId, s.setName, s.setDescription, s.setCategory,
+                        u.userId, u.firstName, u.lastName, u.username,
+                        (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+                        from Sets s, Users u where s.userId = u.userId and s.userId = ?;
+                """;
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            List<Set> userSets = new ArrayList<Set>();
+            while (rs.next()) {
+                User tempUser = new User(rs.getString("userId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("username"));
+                Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
+                        rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
+                userSets.add(tempSet);
+            }
+            return userSets;
+        }
+    }
+
     public List<Set> getSetsByCategory(String category) throws SQLException {
         String sql = """
                         select s.setId, s.setName, s.setDescription, s.setCategory,
@@ -200,36 +225,37 @@ public class SetService {
         }
     }
 
-    public int countFavorite(String setId) throws SQLException {
-        String sql = """
-                        WITH setIdThree AS (SELECT folderId FROM Set_Folders WHERE setId = ?),
-                        folderNames AS (SELECT folderName FROM Folders f LEFT JOIN setIdThree ON setIdThree.folderId = f.folderId)
-                        SELECT COUNT(*) AS fav_count FROM folderNames WHERE folderName = "Favorites"
-                """;
+    // public int countFavorite(String setId) throws SQLException {
+    //     String sql = """
+    //                     WITH setIdThree AS (SELECT folderId FROM Set_Folders WHERE setId = ?),
+    //                     folderNames AS (SELECT folderName FROM Folders f LEFT JOIN setIdThree ON setIdThree.folderId = f.folderId)
+    //                     SELECT COUNT(*) AS fav_count FROM folderNames WHERE folderName = "Favorites"
+    //             """;
 
-        try (Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, setId);
-            ResultSet rs = pstmt.executeQuery();
-            rs.next();
-            int count = rs.getInt("fav_count");
-            return count;
-        }
-    }
+    //     try (Connection conn = dataSource.getConnection();
+    //             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    //         pstmt.setString(1, setId);
+    //         ResultSet rs = pstmt.executeQuery();
+    //         rs.next();
+    //         int count = rs.getInt("fav_count");
+    //         return count;
+    //     }
+    // }
 
-    public boolean updateFlashcardTerm(String cardId, String term) throws SQLException {
+    public boolean updateFlashcard(Flashcard flashcard) throws SQLException {
         String sql1 = """
                 WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
                 SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
                 """;
-        String sql2 = "UPDATE Flashcards SET cardTerm = ? WHERE cardId = ?";
+        String sql2 = "UPDATE Flashcards SET cardTerm = ?, cardDesc = ? WHERE cardId = ?";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt1 = conn.prepareStatement(sql1);
                 PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
-            pstmt1.setString(1, cardId);
-            pstmt2.setString(1, term);
-            pstmt2.setString(2, cardId);
+            pstmt1.setString(1, flashcard.getCardId());
+            pstmt2.setString(1, flashcard.getTerm());
+            pstmt2.setString(2, flashcard.getcardDesc());
+            pstmt2.setString(3, flashcard.getCardId());
 
             ResultSet rs1 = pstmt1.executeQuery();
             rs1.next();
@@ -244,43 +270,17 @@ public class SetService {
         }
     }
 
-    public boolean updateFlashcardDesc(String cardId, String desc) throws SQLException {
-        String sql1 = """
-                WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
-                SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
-                """;
-        String sql2 = "UPDATE Flashcards SET cardDesc = ? WHERE cardId = ?";
-
-        try (Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt1 = conn.prepareStatement(sql1);
-                PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
-            pstmt1.setString(1, cardId);
-            pstmt2.setString(1, desc);
-            pstmt2.setString(2, cardId);
-
-            ResultSet rs1 = pstmt1.executeQuery();
-            rs1.next();
-            String userId = rs1.getString("userId");
-
-            if (userId.equals(accountService.getLoggedInUser().getUserId())) {
-                pstmt2.executeUpdate();
-                return true;
-            } else {
-                throw new IllegalArgumentException("Cannot update another user's card");
-            }
-        }
-    }
-
-    public boolean updateSetName(String setId, String name) throws SQLException {
+    public boolean updateSet(Set set) throws SQLException {
         String sql1 = "SELECT userId from Sets Where setId = ?";
-        String sql2 = "UPDATE Sets SET setName = ? WHERE setId = ?";
-
+        String sql2 = "UPDATE Sets SET setName = ?, setDescription = ?, setCategory = ? WHERE setId = ?";
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt1 = conn.prepareStatement(sql1);
                 PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
-            pstmt1.setString(1, setId);
-            pstmt2.setString(1, name);
-            pstmt2.setString(2, setId);
+            pstmt1.setString(1, set.getSetId());
+            pstmt2.setString(1, set.getName());
+            pstmt2.setString(2, set.getDesc());
+            pstmt2.setString(3, set.getCategory());
+            pstmt2.setString(4, set.getSetId());
 
             ResultSet rs1 = pstmt1.executeQuery();
             rs1.next();
@@ -291,53 +291,6 @@ public class SetService {
                 return true;
             } else {
                 throw new IllegalArgumentException("Cannot update another user's set");
-            }
-        }
-    }
-
-    public boolean updateSetDescription(String setId, String desc) throws SQLException {
-        String sql1 = "SELECT userId from Sets Where setId = ?";
-        String sql2 = "UPDATE Sets SET setDescription = ? WHERE setId = ?";
-        try (Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt1 = conn.prepareStatement(sql1);
-                PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
-            pstmt1.setString(1, setId);
-            pstmt2.setString(1, desc);
-            pstmt2.setString(2, setId);
-
-            ResultSet rs1 = pstmt1.executeQuery();
-            rs1.next();
-            String userId = rs1.getString("userId");
-
-            if (userId.equals(accountService.getLoggedInUser().getUserId())) {
-                pstmt2.executeUpdate();
-                return true;
-            } else {
-                throw new IllegalArgumentException("Cannot update another user's set");
-            }
-        }
-    }
-
-    public boolean updateSetCategory(String setId, String category) throws SQLException {
-        String sql1 = "SELECT userId from Sets Where setId = ?";
-        String sql2 = "UPDATE Sets SET setCategory = ? WHERE setId = ?";
-
-        try (Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt1 = conn.prepareStatement(sql1);
-                PreparedStatement pstmt2 = conn.prepareStatement(sql2)) {
-            pstmt1.setString(1, setId);
-            pstmt2.setString(1, category);
-            pstmt2.setString(2, setId);
-
-            ResultSet rs1 = pstmt1.executeQuery();
-            rs1.next();
-            String userId = rs1.getString("userId");
-
-            if (userId.equals(accountService.getLoggedInUser().getUserId())) {
-                pstmt2.executeUpdate();
-                return true;
-            } else {
-                throw new IllegalArgumentException("cannot update another user's set");
             }
         }
     }
