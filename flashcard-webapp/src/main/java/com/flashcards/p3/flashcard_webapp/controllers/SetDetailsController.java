@@ -7,7 +7,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.flashcards.p3.flashcard_webapp.dtos.FlashcardCreateDto;
+import com.flashcards.p3.flashcard_webapp.dtos.*;
 import com.flashcards.p3.flashcard_webapp.models.*;
 import com.flashcards.p3.flashcard_webapp.services.AccountService;
 import com.flashcards.p3.flashcard_webapp.services.FolderService;
@@ -19,6 +19,7 @@ import java.util.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class SetDetailsController {
@@ -116,19 +117,19 @@ public class SetDetailsController {
             @RequestParam String cardDesc) throws UnsupportedEncodingException {
 
         try {
-            // Flashcard card = new Flashcard(cardId, term, cardDesc);
-            // boolean success = _setService.updateFlashcard(card);
+            UpdateFlashcardDto card = new UpdateFlashcardDto(cardId, term, cardDesc);
+            boolean success = _setService.updateFlashcard(card);
 
-            // if (success) {
-            // return "redirect:/set-details?setId=" + setId;
-            // }
+            if (success) {
+                return "redirect:/set-details?setId=" + setId;
+            }
 
         } catch (Exception e) {
             String message = URLEncoder
                     .encode("Error Updating Set: " + e.toString(), "UTF-8");
             return "redirect:/set-details?setId=" + setId + "&error=" + message;
         }
-        return "redirect:/set-details?setId=" + setId + "&error=" + "Error Adding Card";
+        return "redirect:/set-details?setId=" + setId + "&error=" + "Error%20Updating%20Card";
     }
 
     @PostMapping("/add-to-folder")
@@ -149,7 +150,49 @@ public class SetDetailsController {
                     .encode(e.getMessage(), "UTF-8");
             return "redirect:/set-details?setId=" + setId + "&error=" + message;
         }
-        return "redirect:/set-details?setId=" + setId + "&error=" + "Error Adding Card";
+        return "redirect:/set-details?setId=" + setId + "&error=" + "Error%20Adding%20Card";
+    }
+
+    @PostMapping("/update-set")
+    public String updateSet(
+            @RequestParam String setId,
+            @RequestParam String setName,
+            @RequestParam String setDescription,
+            @RequestParam String setCategory) throws UnsupportedEncodingException {
+
+        try {
+            UpdateSetDto set = new UpdateSetDto(setId, setName, setDescription, setCategory);
+            boolean success = _setService.updateSet(set);
+
+            if (success) {
+                return "redirect:/set-details?setId=" + setId;
+            }
+
+        } catch (Exception e) {
+            String message = URLEncoder
+                    .encode("Error Updating Set: " + e.toString(), "UTF-8");
+            return "redirect:/set-details?setId=" + setId + "&error=" + message;
+        }
+        return "redirect:/set-details?setId=" + setId + "&error=" + "Error%20Updating%Set";
+    }
+
+    @PostMapping("/delete-set")
+    public String deleteSet(
+            @RequestParam String setId) throws UnsupportedEncodingException {
+
+        try {
+            boolean success = _setService.deleteSet(setId);
+
+            if (success) {
+                return "redirect:/profile/currentUser";
+            }
+
+        } catch (Exception e) {
+            String message = URLEncoder
+                    .encode("Error Deleting Set: " + e.getMessage(), "UTF-8");
+            return "redirect:/set-details?setId=" + setId + "&error=" + message;
+        }
+        return "redirect:/set-details?setId=" + setId + "&error=" + "Error%20Deleting%Set";
     }
 
 }
