@@ -124,6 +124,31 @@ public class SetService {
         }
     }
 
+    public List<Set> getSetsByUserId(String userId) throws SQLException {
+        String sql = """
+                        select s.setId, s.setName, s.setDescription, s.setCategory,
+                        u.userId, u.firstName, u.lastName, u.username,
+                        (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+                        from Sets s, Users u where s.userId = u.userId and s.userId = ?;
+                """;
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            List<Set> userSets = new ArrayList<Set>();
+            while (rs.next()) {
+                User tempUser = new User(rs.getString("userId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("username"));
+                Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
+                        rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
+                userSets.add(tempSet);
+            }
+            return userSets;
+        }
+    }
+
     public List<Set> getSetsByCategory(String category) throws SQLException {
         String sql = """
                         select s.setId, s.setName, s.setDescription, s.setCategory,
