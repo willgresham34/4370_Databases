@@ -91,7 +91,13 @@ public class ProfileController {
     }
 
     @GetMapping("/viewUser")
-    public String viewProfile(@RequestParam(name = "userId") String userId, Model model) {
+    public String viewProfile(@RequestParam(name = "userId", required = true) String userId, Model model) {
+
+        User user = _accountService.getLoggedInUser();
+
+        if (userId.equals(user.getUserId())) {
+            return "redirect:/profile/currentUser";
+        }
 
         try {
             // User userObj = _accountService.getUserById(userId);
@@ -110,5 +116,4 @@ public class ProfileController {
         model.addAttribute("pageCss", "/css/profile.css");
         return "pages/view_profile";
     }
-
 }
