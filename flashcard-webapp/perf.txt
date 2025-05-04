@@ -26,8 +26,8 @@ WHERE
     f.userId = u.userId and
     f.userId = ?;
 
-No indexes: 0.00 sec
-Indexes:
+No indexes: 0.00 
+Indexes: 0.00 
 
 2.
 SELECT
@@ -40,20 +40,20 @@ WHERE
     s.userId = u.userId and
     sf.folderId = ?;
 
-No indexes: 0.01 sec
-Indexes:
+No indexes: 0.01 
+Indexes: 0.00
 
 3.
 select * from Sets s, Users u where s.userId = u.userId and setId = ?;
 
-No indexes: 0.00 sec
-Indexes:
+No indexes: 0.00 
+Indexes: 0.00
 
 4. 
 select * from Flashcards where setId = ?;
 
-No indexes: 0.00 sec
-Indexes:
+No indexes: 0.00 
+Indexes: 0.00
 
 5. 
 select s.setId, s.setName, s.setDescription, s.setCategory,
@@ -62,7 +62,7 @@ u.userId, u.firstName, u.lastName,
 from Sets s, Users u where s.userId = u.userId and s.userId = ?;
 
 No indexes: 0.01
-Indexes:
+Indexes: 0.01
 
 6.
 select s.setId, s.setName, s.setDescription, s.setCategory,
@@ -71,7 +71,7 @@ u.userId, u.firstName, u.lastName,
 from Sets s, Users u where s.userId = u.userId and s.setCategory = ?;
 
 No indexes: 0.01
-Indexes:
+Indexes: 0.00
 
 7.
 select s.setId, s.setName, s.setDescription, s.setCategory,
@@ -80,7 +80,7 @@ u.userId, u.firstName, u.lastName,
 from Sets s, Users u where s.userId = u.userId and s.setName = ?;
 
 No indexes: 0.00
-Indexes: 0.01
+Indexes: 0.00
 
 8.
 select s.setId, s.setName, s.setDescription, s.setCategory,
@@ -90,6 +90,59 @@ from Sets s, Users u where s.userId = u.userId
 ORDER BY s.setId DESC;
 
 No indexes: 0.00
-Indexes:
+Indexes: 0.00
 
+9. 
+"insert into Users (username, password, firstName, lastName) values (?, ?, ?, ?)"
 
+No indexes: 0.03 
+Indexes: 0.01
+
+10.
+select * from Users where username = ?
+
+No indexes: 0.00
+Indexes: 0.00
+
+11.
+SELECT firstName, lastName, username FROM Users where userId = ?
+
+No indexes: 0.00
+Indexes: 0.00
+
+12.
+WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
+SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
+
+No indexes: 0.01
+Indexes: 0.00
+
+13.
+SELECT userId from Sets Where setId = ?
+
+No indexes: 0.01
+Indexes: 0.00
+
+14.
+DELETE FROM Flashcards WHERE cardId = ?
+
+No indexes: 0.02
+Indexes: 0.01
+
+15.
+DELETE FROM Sets WHERE setId = ?
+
+No indexes: 0.01
+Indexes: 0.01
+
+16.
+UPDATE Sets SET setName = ?, setDescription = ?, setCategory = ? WHERE setId = ?
+
+No indexes: 0.02
+Indexes: 0.01
+
+17.
+UPDATE Flashcards SET cardTerm = ?, cardDesc = ? WHERE cardId = ?
+
+No indexes: 0.01
+Indexes: 0.01
