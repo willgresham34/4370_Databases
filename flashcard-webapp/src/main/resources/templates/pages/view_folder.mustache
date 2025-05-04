@@ -18,11 +18,11 @@
         </div>
         <div class="set-list-container">
         {{> fragments/error_message}}
-        <ul>
-            {{#sets}}
-                {{> fragments/set_preview}}
-            {{/sets}}
-        </ul>
+          <ul>
+              {{#sets}}
+                  {{> fragments/set_preview_folder}}
+              {{/sets}}
+          </ul>
         </div>
     </div>
 
@@ -31,7 +31,6 @@
     <button class="modal-close" onclick="closeEditFolderModal()">&times;</button>
     <h2>Update or Delete Folder</h2>
 
-    <!-- Update form -->
     <form
       id="updateFolderForm"
       action="/update-folder"

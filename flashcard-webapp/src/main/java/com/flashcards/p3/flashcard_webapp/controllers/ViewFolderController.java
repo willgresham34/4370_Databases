@@ -14,6 +14,7 @@ import com.flashcards.p3.flashcard_webapp.services.AccountService;
 import com.flashcards.p3.flashcard_webapp.services.FolderService;
 import com.flashcards.p3.flashcard_webapp.models.*;
 import com.flashcards.p3.flashcard_webapp.dtos.*;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class ViewFolderController {
@@ -28,7 +29,8 @@ public class ViewFolderController {
     }
 
     @GetMapping("/view-folder")
-    public String viewFolder(@RequestParam(value = "folderId", required = true) String folderId, Model model) {
+    public String viewFolder(@RequestParam(value = "folderId", required = true) String folderId,
+            @RequestParam(required = false) String error, Model model) {
 
         try {
             Folder folder = _folderService.getFolderById(folderId);
@@ -51,6 +53,7 @@ public class ViewFolderController {
             model.addAttribute("error", e.toString());
         }
 
+        model.addAttribute("error", error);
         model.addAttribute("pageCss", "/css/view-folder.css");
 
         return "pages/view_folder";
@@ -81,7 +84,7 @@ public class ViewFolderController {
             FolderUpdateDto folder = new FolderUpdateDto(folderId, folderName);
             boolean success = _folderService.updateFolder(folder);
             if (success) {
-                return "redirect:/profile/currentUser";
+                return "redirect:/view-folder?folderId=" + folderId;
             }
 
         } catch (Exception e) {
@@ -90,6 +93,26 @@ public class ViewFolderController {
             return "redirect:/view-folder?folderId=" + folderId + "&error=" + message;
         }
         return "redirect:/view-folder?folderId=" + folderId + "&error=" + "Error%20Deleting%20Folder";
+    }
+
+    @PostMapping("/remove-from-folder")
+    public String removeFromFolder(@RequestParam(required = true) String setId,
+            @RequestParam(required = true) String folderId) throws UnsupportedEncodingException {
+        try {
+            boolean success = _folderService.deleteSetFromFolder(setId, folderId);
+            if (success) {
+                String message = URLEncoder
+                        .encode("Removed set " + folderId, "UTF-8");
+                return "redirect:/view-folder?folderId=" + folderId + "&error=" + message;
+            }
+
+        } catch (Exception e) {
+            String message = URLEncoder
+                    .encode(e.getMessage(), "UTF-8");
+            return "redirect:/view-folder?folderId=" + folderId + "&error=" + message;
+        }
+
+        return "redirect:/view-folder?folderId=" + folderId + "&error=" + "Error%20Deleting";
     }
 
 }

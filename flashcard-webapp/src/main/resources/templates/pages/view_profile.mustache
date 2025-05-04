@@ -6,14 +6,15 @@
     {{> fragments/error_message}}
     <!-- User Info -->
     <div class="profile-info">
-      <h2 class="profile-name"> </h2>
-      <p class="profile-username">@</p>
-      <div>Total Sets: </div>
+      <h2 class="profile-name">{{fullName}} </h2>
+      <p class="profile-username">@{{username}}</p>
     </div>
+    <div>Total Sets: {{totalSets}}</div>
+  </div>
 
     <!-- Their Sets -->
     <section class="profile-sets">
-      <h3>Users Sets</h3>
+      <h3>{{fullName}}'s Sets</h3>
       <div class="set-list">
         {{#sets}}
           {{> fragments/set_preview}}
