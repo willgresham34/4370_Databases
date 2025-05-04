@@ -64,6 +64,41 @@ public class FolderService {
             }
             return folders;
         }
+    }
+
+    /**
+     * Returns all folders belonging to the current logged in user.
+     * 
+     * @return a list containing all folders owned by the current user.
+     */
+    public List<Folder> getFoldersByUserId(String userId) throws SQLException {
+        final String sql = """
+                        SELECT
+                            f.folderId, f.folderName,
+                            u.userId, u.firstName, u.lastName, u.username
+                        FROM Folders f, Users u
+                        WHERE
+                            f.userId = u.userId and
+                            f.userId = ?;
+                """;
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            List<Folder> folders = new ArrayList<>();
+            while (rs.next()) {
+                User folderUser = new User(rs.getString("userId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("username"));
+                List<Set> folderSets = getFolderSets(rs.getString("folderId"));
+                Folder folder = new Folder(rs.getString("folderId"), rs.getString("folderName"), folderUser,
+                        folderSets.size(), folderSets);
+                folders.add(folder);
+            }
+            return folders;
+        }
 
     }
 
@@ -74,8 +109,33 @@ public class FolderService {
      * 
      * @return the folder.
      */
-    public Folder getFolderById(String folderId) {
-        throw new UnsupportedOperationException("getFolderById not implemented");
+    public Folder getFolderById(String folderId) throws SQLException {
+        final String sql = """
+                        SELECT
+                            f.folderId, f.folderName,
+                            u.userId, u.firstName, u.lastName, u.username
+                        FROM Folders f, Users u
+                        WHERE
+                            f.userId = u.userId and
+                            f.folderId = ?;
+                """;
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);) {
+            pstmt.setString(1, folderId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User folderUser = new User(rs.getString("userId"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("username"));
+                List<Set> folderSets = getFolderSets(rs.getString("folderId"));
+                Folder folder = new Folder(rs.getString("folderId"), rs.getString("folderName"), folderUser,
+                        folderSets.size(), folderSets);
+                return folder;
+            }
+            throw new SQLException("Folder not found");
+        }
     }
 
     private List<Set> getFolderSets(String folderId) throws SQLException {
@@ -254,4 +314,5 @@ public class FolderService {
             return rowsAffected > 0;
         }
     }
+
 }
