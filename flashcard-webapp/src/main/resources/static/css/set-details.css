@@ -118,3 +118,135 @@
   color: #444;
   line-height: 1.5;
 }
+
+.add-card-btn {
+  font-size: 2rem;
+  background-color: #fafafa;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+}
+
+.add-card-btn:hover {
+  background-color: #f0f0f0;
+  border-color: #bbb;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal h2 {
+  margin: 0.5rem 0rem;
+}
+
+.modal textarea {
+  resize: vertical;
+}
+
+.card-form .form-group {
+  margin-bottom: 1rem;
+}
+.card-form label {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.card-form input,
+.card-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+}
+
+.edit-card-btn {
+  background: #ffffff;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-card-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+#addToFolderModal.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+#addToFolderModal .modal {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+#addToFolderModal .modal h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+
+#addToFolderModal .folder-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 1rem 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+#addToFolderModal .folder-item {
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+#addToFolderModal .folder-item:hover {
+  background: #f5f5f5;
+}
+#addToFolderModal .folder-item input[type="radio"] {
+  margin-right: 0.75rem;
+}

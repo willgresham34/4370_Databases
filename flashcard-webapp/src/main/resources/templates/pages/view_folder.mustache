@@ -1,0 +1,18 @@
+{{< base}}
+  {{$title}}Folder View{{/title}}
+  {{$body}}
+    <div>
+        <div class="folder-details">
+            <h1>folderName</h1>
+        </div>
+        <div class="set-list-container">
+        {{> fragments/error_message}}
+        <ul>
+            {{#sets}}
+                {{> fragments/set_preview}}
+            {{/sets}}
+        </ul>
+        </div>
+    </div>
+  {{/body}}
+{{/base}}

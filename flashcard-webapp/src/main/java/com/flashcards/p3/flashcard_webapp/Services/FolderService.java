@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,19 +139,18 @@ public class FolderService {
      * @return {@code true} if the update changes any rows, {@code false} otherwise
      * @throws SQLException if the SQL statement is invalid.
      */
-    public boolean addSetToFolder(String setId, Folder folder) throws SQLException {
+    public boolean addSetToFolder(String setId, String folderId) throws SQLException {
 
-        if (!folder.getUser().equals(accountService.getLoggedInUser())) {
-            throw new IllegalArgumentException("Folder does not belong to user");
-        }
         final String sql = "insert into Set_Folders (setId, folderId) values (?, ?);";
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, setId);
-            stmt.setString(2, folder.getFolderId());
+            stmt.setString(2, folderId);
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new SQLException("Set already in specified Folder");
         }
     }
 

@@ -181,3 +181,26 @@ a {
 .footer-link:focus {
   text-decoration: underline;
 }
+
+.container {
+  max-width: 600px;
+  margin: 1rem;
+  padding: 1rem 1rem;
+  background-color: var(--color-light);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.center-align {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.narrow {
+  width: fit-content;
+  margin: 1rem auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
