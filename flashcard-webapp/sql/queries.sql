@@ -86,3 +86,25 @@ u.userId, u.firstName, u.lastName,
 (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
 from Sets s, Users u where s.userId = u.userId
 ORDER BY s.setId DESC;
+
+/* This Query joins the flashcard and sets tables to find the userId associated with the given cardId */
+WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
+SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
+
+/* This query Updates a flashcard's card Term and Description with a given cardId */
+UPDATE Flashcards SET cardTerm = ?, cardDesc = ? WHERE cardId = ?
+
+/* This query finds a userId associated with a given setId */
+SELECT userId from Sets Where setId = ?
+
+/* This query updates a set's name, desc and cateogry based on a given setId */
+UPDATE Sets SET setName = ?, setDescription = ?, setCategory = ? WHERE setId = ?
+
+/* This query deletes a set based on a given setId */
+DELETE FROM Sets WHERE setId = ?
+
+/* This query deletes a flashcard based on a given cardId */
+DELETE FROM Flashcards WHERE cardId = ?
+
+/* This query finds a user based on userId */
+SELECT firstName, lastName, username FROM Users where userId = ?
