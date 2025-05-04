@@ -152,55 +152,55 @@ public class SetService {
         }
     }
 
-    public List<Set> getSetsByCategory(String category) throws SQLException {
-        String sql = """
-                        select s.setId, s.setName, s.setDescription, s.setCategory,
-                        u.userId, u.firstName, u.lastName, u.username,
-                        (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
-                        from Sets s, Users u where s.userId = u.userId and s.setCategory = ?;
-                """;
-        try (Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, category);
-            ResultSet rs = pstmt.executeQuery();
-            List<Set> catSets = new ArrayList<Set>();
-            while (rs.next()) {
-                User tempUser = new User(rs.getString("userId"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName"),
-                        rs.getString("username"));
-                Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
-                        rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
-                catSets.add(tempSet);
-            }
-            return catSets;
-        }
-    }
+    // public List<Set> getSetsByCategory(String category) throws SQLException {
+    //     String sql = """
+    //                     select s.setId, s.setName, s.setDescription, s.setCategory,
+    //                     u.userId, u.firstName, u.lastName, u.username,
+    //                     (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+    //                     from Sets s, Users u where s.userId = u.userId and s.setCategory = ?;
+    //             """;
+    //     try (Connection conn = dataSource.getConnection();
+    //             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    //         pstmt.setString(1, category);
+    //         ResultSet rs = pstmt.executeQuery();
+    //         List<Set> catSets = new ArrayList<Set>();
+    //         while (rs.next()) {
+    //             User tempUser = new User(rs.getString("userId"),
+    //                     rs.getString("firstName"),
+    //                     rs.getString("lastName"),
+    //                     rs.getString("username"));
+    //             Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
+    //                     rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
+    //             catSets.add(tempSet);
+    //         }
+    //         return catSets;
+    //     }
+    // }
 
-    public List<Set> getSetsByName(String name) throws SQLException {
-        String sql = """
-                    select s.setId, s.setName, s.setDescription, s.setCategory,
-                    u.userId, u.firstName, u.lastName, u.username
-                    (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
-                    from Sets s, Users u where s.userId = u.userId and s.setName = ?;
-                """;
-        try (Connection conn = dataSource.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, name);
-            ResultSet rs = pstmt.executeQuery();
-            List<Set> nameSets = new ArrayList<Set>();
-            while (rs.next()) {
-                User tempUser = new User(rs.getString("userId"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName"),
-                        rs.getString("username"));
-                Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
-                        rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
-                nameSets.add(tempSet);
-            }
-            return nameSets;
-        }
-    }
+    // public List<Set> getSetsByName(String name) throws SQLException {
+    //     String sql = """
+    //                 select s.setId, s.setName, s.setDescription, s.setCategory,
+    //                 u.userId, u.firstName, u.lastName, u.username
+    //                 (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+    //                 from Sets s, Users u where s.userId = u.userId and s.setName = ?;
+    //             """;
+    //     try (Connection conn = dataSource.getConnection();
+    //             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    //         pstmt.setString(1, name);
+    //         ResultSet rs = pstmt.executeQuery();
+    //         List<Set> nameSets = new ArrayList<Set>();
+    //         while (rs.next()) {
+    //             User tempUser = new User(rs.getString("userId"),
+    //                     rs.getString("firstName"),
+    //                     rs.getString("lastName"),
+    //                     rs.getString("username"));
+    //             Set tempSet = new Set(rs.getString("setId"), tempUser, rs.getString("setName"),
+    //                     rs.getString("setDescription"), rs.getString("setCategory"), rs.getInt("numCards"));
+    //             nameSets.add(tempSet);
+    //         }
+    //         return nameSets;
+    //     }
+    // }
 
     public List<Set> getNewestSets() throws SQLException {
         String sql = """
