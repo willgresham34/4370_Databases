@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
-import com.flashcards.p3.flashcard_webapp.dtos.ViewUserDto;
-import com.flashcards.p3.flashcard_webapp.models.Folder;
-import com.flashcards.p3.flashcard_webapp.models.Set;
-import com.flashcards.p3.flashcard_webapp.models.User;
+import com.flashcards.p3.flashcard_webapp.models.*;
+import com.flashcards.p3.flashcard_webapp.dtos.*;
 
 @Service
 @SessionScope
@@ -206,23 +205,22 @@ public class FolderService {
      * @param setId
      * @param folderId
      * @return {@code true} if the update changes any rows, {@code false} otherwise
-     * @throws SQLException if the SQL statement is invalid.
-     * @throws IllegalArgumentException if folder does not belong to the logged in user.
+     * @throws SQLException             if the SQL statement is invalid.
+     * @throws IllegalArgumentException if folder does not belong to the logged in
+     *                                  user.
      */
-    public boolean addSetToFolder(String setId, Folder folder) throws SQLException, IllegalArgumentException {
-
-        if (!folder.getUser().equals(accountService.getLoggedInUser())) {
-            throw new IllegalArgumentException("Folder does not belong to user");
-        }
+    public boolean addSetToFolder(String setId, String folderId) throws SQLException {
 
         final String sql = "insert into Set_Folders (setId, folderId) values (?, ?);";
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, setId);
-            stmt.setString(2, folder.getFolderId());
+            stmt.setString(2, folderId);
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new SQLException("Set already in specified Folder");
         }
     }
 
@@ -236,39 +234,43 @@ public class FolderService {
      * @return {@code true} if favorites folder updated, {@code false} otherwise
      * @throws SQLException if the SQL statement is invalid.
      */
-    // public boolean setToFavorites(String setId, Boolean isAdd) throws SQLException {
-    //     final String loggedInUserId = accountService.getLoggedInUser().getUserId();
-    //     final String sql1 = "select setId from Folders where userId = ? and folderName = 'Favorites';";
-    //     final String sql2 = "insert into Set_Folders (setId, folderId) values (?, ?);";
-    //     final String sql3 = "delete from Set_Folders where setId = ? and folderId = ?;";
+    // public boolean setToFavorites(String setId, Boolean isAdd) throws
+    // SQLException {
+    // final String loggedInUserId = accountService.getLoggedInUser().getUserId();
+    // final String sql1 = "select setId from Folders where userId = ? and
+    // folderName = 'Favorites';";
+    // final String sql2 = "insert into Set_Folders (setId, folderId) values (?,
+    // ?);";
+    // final String sql3 = "delete from Set_Folders where setId = ? and folderId =
+    // ?;";
 
-    //     try (Connection conn = dataSource.getConnection();
-    //             PreparedStatement pstmt1 = conn.prepareStatement(sql1);
-    //             PreparedStatement pstmt2 = conn.prepareStatement(sql2);
-    //             PreparedStatement pstmt3 = conn.prepareStatement(sql3);) {
-    //         pstmt1.setString(1, loggedInUserId);
-    //         ResultSet rs1 = pstmt1.executeQuery();
+    // try (Connection conn = dataSource.getConnection();
+    // PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+    // PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+    // PreparedStatement pstmt3 = conn.prepareStatement(sql3);) {
+    // pstmt1.setString(1, loggedInUserId);
+    // ResultSet rs1 = pstmt1.executeQuery();
 
-    //         if (rs1.next() == false && isAdd == true) {
-    //             addFolder("Favorites");
-    //             pstmt1.setString(1, loggedInUserId);
-    //             rs1 = pstmt1.executeQuery();
-    //         } else if (rs1.next() == false && isAdd == false) {
-    //             throw new SQLException("Favorites folder does not exist");
-    //         }
-    //         String favoriteFolderId = rs1.getString("setId");
-    //         int affectedRows;
-    //         if (isAdd) {
-    //             pstmt2.setString(1, setId);
-    //             pstmt2.setString(2, favoriteFolderId);
-    //             affectedRows = pstmt2.executeUpdate();
-    //         } else {
-    //             pstmt3.setString(1, setId);
-    //             pstmt3.setString(2, favoriteFolderId);
-    //             affectedRows = pstmt3.executeUpdate();
-    //         }
-    //         return affectedRows > 0;
-    //     }
+    // if (rs1.next() == false && isAdd == true) {
+    // addFolder("Favorites");
+    // pstmt1.setString(1, loggedInUserId);
+    // rs1 = pstmt1.executeQuery();
+    // } else if (rs1.next() == false && isAdd == false) {
+    // throw new SQLException("Favorites folder does not exist");
+    // }
+    // String favoriteFolderId = rs1.getString("setId");
+    // int affectedRows;
+    // if (isAdd) {
+    // pstmt2.setString(1, setId);
+    // pstmt2.setString(2, favoriteFolderId);
+    // affectedRows = pstmt2.executeUpdate();
+    // } else {
+    // pstmt3.setString(1, setId);
+    // pstmt3.setString(2, favoriteFolderId);
+    // affectedRows = pstmt3.executeUpdate();
+    // }
+    // return affectedRows > 0;
+    // }
     // }
 
     /**
@@ -277,15 +279,13 @@ public class FolderService {
      * @param folder the folder to update within the database.
      * @return {@code true} if folder updated, {@code false} otherwise
      * @throws SQLException             if SQL statement is invalid.
-     * @throws IllegalArgumentException if folder does not belong to the logged in user.
+     * @throws IllegalArgumentException if folder does not belong to the logged in
+     *                                  user.
      */
-    public boolean updateFolder(Folder folder) throws SQLException, IllegalArgumentException {
+    public boolean updateFolder(FolderUpdateDto folder) throws SQLException {
         // if (folder.getFolderName().equals("Favorites")) {
-        //     throw new IllegalArgumentException("Cannot edit favorites folder");
+        // throw new IllegalArgumentException("Cannot edit favorites folder");
         // }
-        if (!folder.getUser().equals(accountService.getLoggedInUser())) {
-            throw new IllegalArgumentException("Folder does not belong to user");
-        }
 
         final String sql = "UPDATE Folders SET folderName = ? WHERE folderId = ?;";
 
@@ -305,23 +305,21 @@ public class FolderService {
      * @param folder the folder to delete
      * @return {@code true} if folder deleted, {@code false} otherwise
      * @throws SQLException             if SQL statement is invalid.
-     * @throws IllegalArgumentException if folder does not belong to the logged in user.
+     * @throws IllegalArgumentException if folder does not belong to the logged in
+     *                                  user.
      * 
      */
-    public boolean deleteFolder(Folder folder) throws SQLException, IllegalArgumentException {
+    public boolean deleteFolder(String folderId) throws SQLException, IllegalArgumentException {
 
         // if (folder.getFolderName().equals("Favorites")) {
-        //     throw new IllegalArgumentException("Cannot delete favorites folder");
+        // throw new IllegalArgumentException("Cannot delete favorites folder");
         // }
-        if (!folder.getUser().equals(accountService.getLoggedInUser())) {
-            throw new IllegalArgumentException("Folder does not belong to user");
-        }
 
         final String sql = "DELETE FROM Folders WHERE folderId = ?;";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, folder.getFolderId());
+            pstmt.setString(1, folderId);
 
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;
@@ -330,24 +328,22 @@ public class FolderService {
 
     /**
      * Deletes the specifed set from the specified folder
-     * @param set       the set to delete from the folder.
-     * @param folder    the folder to delete the set from.
+     * 
+     * @param set    the set to delete from the folder.
+     * @param folder the folder to delete the set from.
      * @return {@code true} if set_folder relation deleted, {@code false} otherwise
      * @throws SQLException             if SQL statement is invalid.
-     * @throws IllegalArgumentException if folder does not belong to the logged in user.
+     * @throws IllegalArgumentException if folder does not belong to the logged in
+     *                                  user.
      */
-    public boolean deleteSetFromFolder(Set set, Folder folder)  throws SQLException, IllegalArgumentException {
-
-        if (!folder.getUser().equals(accountService.getLoggedInUser())) {
-            throw new IllegalArgumentException("Folder does not belong to user");
-        }
+    public boolean deleteSetFromFolder(String setId, String folderId) throws SQLException, IllegalArgumentException {
 
         final String sql = "DELETE FROM Set_Folders WHERE setId = ? AND folderId = ?;";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, set.getSetId());
-            pstmt.setString(2, folder.getFolderId());
+            pstmt.setString(1, setId);
+            pstmt.setString(2, folderId);
 
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;

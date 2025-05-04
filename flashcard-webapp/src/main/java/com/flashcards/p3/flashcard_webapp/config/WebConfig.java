@@ -24,7 +24,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(_authInterceptor)
-                .addPathPatterns("/profile/*");
+                .addPathPatterns("/profile/*")
+                .addPathPatterns("/view-folder*");
     }
 
 }

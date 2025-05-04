@@ -2,13 +2,36 @@
   {{$title}}Set Details{{/title}}
 
   {{$body}}
+  {{> fragments/error_message}}
     <div class="set-details-header">
         <div class="set-preview">
           <div class="set-prev-header">
-            <h2 class="set-title">{{name}}</h2>
+            <div class="set-sub-title">
+              <h2 class="set-title">{{name}}</h2>
+              {{#owner}}
+              <div class="set-edit-btn">
+                  <button
+                  data-set-name="{{name}}"
+                  data-set-id="{{setId}}"
+                  data-set-description="{{description}}"
+                  data-set-category="{{category}}"
+                  onclick="openEditSetModal(this)"
+                  aria-label="Edit Set"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M12.146.854a.5.5 0 01.708 0l2.292 2.292a.5.5 0 010 .708L6.207 12.793l-2.5.5a.5.5 0 01-.577-.577l.5-2.5L12.146.854z"/>
+                    <path fill-rule="evenodd" d="M11.207 2L3 10.207V13h2.793L14 4.793 11.207 2z"/>
+                  </svg>
+                </button>
+              </div>
+              {{/owner}}
+            </div>
             <div class="set-sub-title">
               <div class="split">
                   <span class="set-author">By: <a href="/profile/viewUser?userId={{userId}}">{{fullName}}</a></span>
+                  {{#auth}}
+                    <button class="btn" onclick="openAddToFolderModal()" style="margin: 0rem 1rem">Add to Folder</button>
+                  {{/auth}}
               </div>
               <div class="split">
                   <span class="set-category">{{category}}</span>
@@ -25,7 +48,228 @@
                 {{#flashcards}}
                         {{> fragments/flashcard }}
                 {{/flashcards}}
+                {{#owner}}
+                  <div class="flashcard">
+                      <button type="button" class="add-card-btn" onclick="openCreateCardModal()">+</button>
+                  </div>
+                {{/owner}}
         </div>  
     <div>
+
+<div id="createCardModal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <button class="modal-close" onclick="closeCreateCardModal()">&times;</button>
+      <h2>Create New Card</h2>
+
+      <form action="/create-card" method="post" class="card-form">
+        <input type="hidden" name="setId" value="{{setId}}" />
+
+        <div class="form-group">
+          <label for="term">Term</label>
+          <textarea id="term" name="term" required class="locked-width"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="cardDesc">Description</label>
+          <textarea id="cardDesc" name="cardDesc" required class="locked-width" rows="4"></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Create Card</button>
+      </form>
+    </div>
+</div>
+
+<div id="updateCardModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeUpdateCardModal()">&times;</button>
+    <h2>Update or Delete Card</h2>
+
+    <!-- Update form -->
+    <form id="updateCardForm" action="/update-card" method="post" class="card-form">
+      <input type="hidden" name="cardId" value="" />
+      <input type="hidden" name="setId" value="" />
+
+      <div class="form-group">
+        <label for="editTerm">Term</label>
+        <textarea id="editTerm" name="term" required class="locked-width"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="editDesc">Description</label>
+        <textarea id="editDesc" name="cardDesc" required class="locked-width" rows="4"></textarea>
+      </div>
+
+      <div class="modal-buttons">
+        <button type="button" class="btn-secondary" onclick="closeUpdateCardModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Update</button>
+      </div>
+    </form>
+
+    <!-- Delete form -->
+    <form id="deleteCardForm" action="/delete-card" method="post" style="margin-top:1rem;" class="delete-form">
+      <input type="hidden" name="cardId" value="" />
+      <input type="hidden" name="setId" value="" />
+      <button type="submit" class="btn-danger">Delete</button>
+    </form>
+  </div>
+</div>
+
+
+<div id="addToFolderModal" class="modal-overlay">
+  <div class="modal">
+    <h2>Add Set to Folder</h2>
+    <form id="addToFolderForm" action="/add-to-folder" method="post">
+      <input type="hidden" name="setId" value="{{setId}}" />
+      <div class="folder-list">
+        {{#folders}}
+          <label class="folder-item">
+            <input type="radio" name="folderId" value="{{folderId}}" required>
+            <span>{{folderName}}</span>
+          </label>
+        {{/folders}}
+        {{^folders}}
+          <p style="padding:0.5rem;">No folders available.</p>
+        {{/folders}}
+      </div>
+      <div class="modal-buttons">
+        <button type="button" class="btn-secondary" onclick="closeAddToFolderModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Add</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div id="updateCardModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeUpdateCardModal()">&times;</button>
+    <h2>Update or Delete Card</h2>
+
+    <form id="updateCardForm" action="/update-card" method="post" class="card-form">
+      <input type="hidden" name="cardId" value="" />
+      <input type="hidden" name="setId" value="" />
+
+      <div class="form-group">
+        <label for="editTerm">Term</label>
+        <textarea id="editTerm" name="term" required class="locked-width"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="editDesc">Description</label>
+        <textarea id="editDesc" name="cardDesc" required class="locked-width" rows="4"></textarea>
+      </div>
+
+      <div class="modal-buttons">
+        <button type="button" class="btn-secondary" onclick="closeUpdateCardModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Update</button>
+      </div>
+    </form>
+
+    <form id="deleteCardForm" action="/delete-card" method="post" style="margin-top:1rem;" class="delete-form">
+      <input type="hidden" name="cardId" value="" />
+      <input type="hidden" name="setId" value="" />
+      <button type="submit" class="btn-danger">Delete</button>
+    </form>
+  </div>
+</div>
+
+
+<div id="editSetModal" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEditSetModal()">&times;</button>
+    <h2>Update or Delete Set</h2>
+
+    <form id="updateSetForm" action="/update-set" method="post">
+      <input type="hidden" name="setId" value="" />
+
+      <div class="form-group">
+        <label for="editSetName">Name</label>
+        <input id="editSetName" name="setName" type="text" required />
+      </div>
+      <div class="form-group">
+        <label for="editSetDesc">Description</label>
+        <textarea id="editSetDesc" name="setDescription" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="editSetCat">Category</label>
+        <input id="editSetCat" name="setCategory" type="text" />
+      </div>
+
+      <div class="modal-buttons">
+        <button type="button" class="btn-secondary" onclick="closeEditSetModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Update</button>
+      </div>
+    </form>
+
+    <form id="deleteSetForm" action="/delete-set" method="post" style="margin-top:1rem;">
+      <input type="hidden" name="setId" value="" />
+      <div class="modal-buttons">
+        <button type="submit" class="btn-danger">Delete Set</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+  <script>
+    function openCreateCardModal(){
+      document.getElementById('createCardModal').style.display = 'flex';
+    }
+    function closeCreateCardModal(){
+      document.getElementById('createCardModal').style.display = 'none';
+    }
+
+    function openAddToFolderModal() {
+      document.getElementById('addToFolderModal').style.display = 'flex';
+    }
+    function closeAddToFolderModal() {
+      document.getElementById('addToFolderModal').style.display = 'none';
+    }
+
+    function openUpdateCardModal(triggerElem) {
+    const id = triggerElem.dataset.cardId;
+    const term = triggerElem.dataset.cardTerm;
+    const desc = triggerElem.dataset.cardDesc;
+    const setId = triggerElem.dataset.setId;
+
+    document.getElementById('editTerm').value = term;
+    document.getElementById('editDesc').value = desc;
+
+    const updateForm = document.getElementById('updateCardForm');
+    updateForm.elements['cardId'].value = id;
+    updateForm.elements['setId'].value = setId;
+
+    const deleteForm = document.getElementById('deleteCardForm');
+    deleteForm.elements['cardId'].value = id;
+    deleteForm.elements['setId'].value = setId;
+
+    document.getElementById('updateCardModal').style.display = 'flex';
+  }
+
+  function closeUpdateCardModal() {
+    document.getElementById('updateCardModal').style.display = 'none';
+  }
+
+  function openEditSetModal(triggerElem){
+    const setId = triggerElem.dataset.setId;
+    const setName = triggerElem.dataset.setName;
+    const setDescription = triggerElem.dataset.setDescription;
+    const setCategory = triggerElem.dataset.setCategory;
+
+    const updateForm = document.getElementById("updateSetForm");
+    updateForm.elements["setId"].value = setId;
+    updateForm.elements["setName"].value = setName;
+    updateForm.elements["setDescription"].value = setDescription;
+    updateForm.elements["setCategory"].value = setCategory;
+
+    const deleteForm = document.getElementById("deleteSetForm");
+    deleteForm.elements["setId"].value = setId;
+
+    document.getElementById("editSetModal").style.display = 'flex';
+  }
+
+  function closeEditSetModal(){
+    document.getElementById("editSetModal").style.display = 'none';
+  }
+  </script>
   {{/body}}
 {{/base}}

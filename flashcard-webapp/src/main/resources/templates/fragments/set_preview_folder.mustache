@@ -1,0 +1,29 @@
+<a href="/set-details?setId={{setId}}" class="set-preview-link">
+  <div class="set-preview">
+    <div class="set-prev-header">
+      <h2 class="set-title">{{name}}</h2>
+      <div class=set-sub-title>
+        <div>
+          <span class="set-category">{{category}}</span>
+        </div>
+        <div>
+          <form action="/remove-from-folder" method="post" class="remove-from-folder-form">
+            <input type="hidden" name="setId" value="{{setId}}" />
+            <input type="hidden" name="folderId" value="{{folderId}}" />
+            <button 
+              type="submit" 
+              class="remove-from-folder-btn" 
+              aria-label="Remove from folder">
+              Remove from Folder
+            </button>
+          </form>
+        </div>
+        
+      </div>
+    </div>
+    <div class="set-prev-body">
+      <p class="set-description">{{desc}}</p>
+    </div>
+  </div>
+</a>
+

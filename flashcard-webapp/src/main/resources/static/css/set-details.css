@@ -118,3 +118,62 @@
   color: #444;
   line-height: 1.5;
 }
+
+.add-card-btn {
+  font-size: 2rem;
+  background-color: #fafafa;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+}
+
+.add-card-btn:hover {
+  background-color: #f0f0f0;
+  border-color: #bbb;
+}
+
+.edit-card-btn {
+  background-color: transparent;
+  border: none;
+  background-color: #f0f0f0;
+}
+
+.set-edit-btn {
+  margin-left: auto;
+}
+
+.set-edit-btn button {
+  background-color: transparent;
+  border: none;
+}
+
+.folder-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 5px;
+}
+
+.modal .folder-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal .folder-item:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.modal .folder-item input[type="radio"] {
+  margin-right: 0.75rem;
+  accent-color: #007bff;
+  width: 1rem;
+  height: 1rem;
+}

@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
+import com.flashcards.p3.flashcard_webapp.dtos.FlashcardCreateDto;
 import com.flashcards.p3.flashcard_webapp.dtos.SetCreateDto;
+import com.flashcards.p3.flashcard_webapp.dtos.UpdateFlashcardDto;
+import com.flashcards.p3.flashcard_webapp.dtos.UpdateSetDto;
 import com.flashcards.p3.flashcard_webapp.models.Flashcard;
 import com.flashcards.p3.flashcard_webapp.models.Set;
 import com.flashcards.p3.flashcard_webapp.models.User;
@@ -45,12 +48,12 @@ public class SetService {
         }
     }
 
-    public boolean addFlashcard(Flashcard newCard, String setId) throws SQLException {
+    public boolean addFlashcard(FlashcardCreateDto newCard) throws SQLException {
         final String sql = "insert into Flashcards (setId, cardTerm, cardDesc) values (?, ?, ?);";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement cardStmt = conn.prepareStatement(sql)) {
-            cardStmt.setString(1, setId);
+            cardStmt.setString(1, newCard.getSetId());
             cardStmt.setString(2, newCard.getTerm());
             cardStmt.setString(3, newCard.getcardDesc());
 
@@ -225,23 +228,24 @@ public class SetService {
     }
 
     // public int countFavorite(String setId) throws SQLException {
-    //     String sql = """
-    //                     WITH setIdThree AS (SELECT folderId FROM Set_Folders WHERE setId = ?),
-    //                     folderNames AS (SELECT folderName FROM Folders f LEFT JOIN setIdThree ON setIdThree.folderId = f.folderId)
-    //                     SELECT COUNT(*) AS fav_count FROM folderNames WHERE folderName = "Favorites"
-    //             """;
+    // String sql = """
+    // WITH setIdThree AS (SELECT folderId FROM Set_Folders WHERE setId = ?),
+    // folderNames AS (SELECT folderName FROM Folders f LEFT JOIN setIdThree ON
+    // setIdThree.folderId = f.folderId)
+    // SELECT COUNT(*) AS fav_count FROM folderNames WHERE folderName = "Favorites"
+    // """;
 
-    //     try (Connection conn = dataSource.getConnection();
-    //             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-    //         pstmt.setString(1, setId);
-    //         ResultSet rs = pstmt.executeQuery();
-    //         rs.next();
-    //         int count = rs.getInt("fav_count");
-    //         return count;
-    //     }
+    // try (Connection conn = dataSource.getConnection();
+    // PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    // pstmt.setString(1, setId);
+    // ResultSet rs = pstmt.executeQuery();
+    // rs.next();
+    // int count = rs.getInt("fav_count");
+    // return count;
+    // }
     // }
 
-    public boolean updateFlashcard(Flashcard flashcard) throws SQLException {
+    public boolean updateFlashcard(UpdateFlashcardDto flashcard) throws SQLException {
         String sql1 = """
                 WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
                 SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
@@ -260,7 +264,9 @@ public class SetService {
             rs1.next();
             String userId = rs1.getString("userId");
 
-            if (userId.equals(accountService.getLoggedInUser().getUserId())) {
+            if (!accountService.isAuthenticated()) {
+                throw new IllegalArgumentException("Please login to update a card");
+            } else if (userId.equals(accountService.getLoggedInUser().getUserId())) {
                 pstmt2.executeUpdate();
                 return true;
             } else {
@@ -269,7 +275,7 @@ public class SetService {
         }
     }
 
-    public boolean updateSet(Set set) throws SQLException {
+    public boolean updateSet(UpdateSetDto set) throws SQLException {
         String sql1 = "SELECT userId from Sets Where setId = ?";
         String sql2 = "UPDATE Sets SET setName = ?, setDescription = ?, setCategory = ? WHERE setId = ?";
         try (Connection conn = dataSource.getConnection();
@@ -285,7 +291,9 @@ public class SetService {
             rs1.next();
             String userId = rs1.getString("userId");
 
-            if (userId.equals(accountService.getLoggedInUser().getUserId())) {
+            if (!accountService.isAuthenticated()) {
+                throw new IllegalArgumentException("Please login to update a set");
+            } else if (userId.equals(accountService.getLoggedInUser().getUserId())) {
                 pstmt2.executeUpdate();
                 return true;
             } else {

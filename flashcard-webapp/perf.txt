@@ -1,0 +1,148 @@
+Statements used to index tables:
+Folders table:
+-INDEX idx_folders_userId (userId)
+
+Sets table:
+-INDEX idx_sets_userId (userId)
+
+Sets_folder table:
+-INDEX idx_set_folders_setId (setId)
+-INDEX idx_set_folders_folderId (folderId)
+
+Flashcards table:
+-INDEX idx_flashcards_setId (setId)
+
+--> All "?" in the following statements will be replaced with the very last value in each table to simulate worst case scenario.
+
+Queries affected:
+
+1.
+SELECT 
+    f.folderId, f.folderName,
+    u.userId, u.firstName, u.lastName
+FROM 
+    Folders f, Users u
+WHERE
+    f.userId = u.userId and
+    f.userId = ?;
+
+No indexes: 0.00 
+Indexes: 0.00 
+
+2.
+SELECT
+    s.setId, s.setName, s.setDescription, s.setCategory,
+    (SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards,
+    u.userId, u.firstName, u.lastName
+FROM Sets s, Set_Folders sf, Users u
+WHERE 
+    s.setId = sf.setId and
+    s.userId = u.userId and
+    sf.folderId = ?;
+
+No indexes: 0.01 
+Indexes: 0.00
+
+3.
+select * from Sets s, Users u where s.userId = u.userId and setId = ?;
+
+No indexes: 0.00 
+Indexes: 0.00
+
+4. 
+select * from Flashcards where setId = ?;
+
+No indexes: 0.00 
+Indexes: 0.00
+
+5. 
+select s.setId, s.setName, s.setDescription, s.setCategory,
+u.userId, u.firstName, u.lastName,
+(SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+from Sets s, Users u where s.userId = u.userId and s.userId = ?;
+
+No indexes: 0.01
+Indexes: 0.01
+
+6.
+select s.setId, s.setName, s.setDescription, s.setCategory,
+u.userId, u.firstName, u.lastName,
+(SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+from Sets s, Users u where s.userId = u.userId and s.setCategory = ?;
+
+No indexes: 0.01
+Indexes: 0.00
+
+7.
+select s.setId, s.setName, s.setDescription, s.setCategory,
+u.userId, u.firstName, u.lastName,
+(SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+from Sets s, Users u where s.userId = u.userId and s.setName = ?;
+
+No indexes: 0.00
+Indexes: 0.00
+
+8.
+select s.setId, s.setName, s.setDescription, s.setCategory,
+u.userId, u.firstName, u.lastName,
+(SELECT COUNT(*) FROM Flashcards f where f.setId = s.setId) as numCards
+from Sets s, Users u where s.userId = u.userId
+ORDER BY s.setId DESC;
+
+No indexes: 0.00
+Indexes: 0.00
+
+9. 
+"insert into Users (username, password, firstName, lastName) values (?, ?, ?, ?)"
+
+No indexes: 0.03 
+Indexes: 0.01
+
+10.
+select * from Users where username = ?
+
+No indexes: 0.00
+Indexes: 0.00
+
+11.
+SELECT firstName, lastName, username FROM Users where userId = ?
+
+No indexes: 0.00
+Indexes: 0.00
+
+12.
+WITH flashcard AS (SELECT setId FROM Flashcards WHERE cardId = ?)
+SELECT userId FROM Sets s JOIN flashcard ON flashcard.setId = s.setId
+
+No indexes: 0.01
+Indexes: 0.00
+
+13.
+SELECT userId from Sets Where setId = ?
+
+No indexes: 0.01
+Indexes: 0.00
+
+14.
+DELETE FROM Flashcards WHERE cardId = ?
+
+No indexes: 0.02
+Indexes: 0.01
+
+15.
+DELETE FROM Sets WHERE setId = ?
+
+No indexes: 0.01
+Indexes: 0.01
+
+16.
+UPDATE Sets SET setName = ?, setDescription = ?, setCategory = ? WHERE setId = ?
+
+No indexes: 0.02
+Indexes: 0.01
+
+17.
+UPDATE Flashcards SET cardTerm = ?, cardDesc = ? WHERE cardId = ?
+
+No indexes: 0.01
+Indexes: 0.01

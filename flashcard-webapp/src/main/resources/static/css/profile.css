@@ -1,5 +1,5 @@
 .user-container {
-  max-width: 90vw;
+  max-width: 800px;
   margin: auto;
   padding: 1rem 1rem;
   background-color: var(--color-light);
@@ -11,9 +11,8 @@
 .profile-info {
   width: 100%;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
+  align-items: flex-end;
+  gap: 1.5rem;
 }
 .profile-name {
   font-size: xx-large;
@@ -21,7 +20,7 @@
 }
 
 .profile-username {
-  padding: auto;
+  padding-bottom: 0.3rem;
   margin: 0;
 }
 
