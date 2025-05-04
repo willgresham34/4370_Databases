@@ -13,7 +13,6 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import com.flashcards.p3.flashcard_webapp.dtos.SetCreateDto;
-import com.flashcards.p3.flashcard_webapp.dtos.ViewUserDto;
 import com.flashcards.p3.flashcard_webapp.models.Set;
 import com.flashcards.p3.flashcard_webapp.models.User;
 import com.flashcards.p3.flashcard_webapp.models.Folder;
@@ -42,8 +41,7 @@ public class ProfileController {
             List<Set> sets = _setService.currentUserSets();
             List<Folder> folders = _folderService.getUserFolders();
 
-            model.addAttribute("firstName", user.getFirstName());
-            model.addAttribute("lastName", user.getLastName());
+            model.addAttribute("fullName", user.getFullName());
             model.addAttribute("username", user.getUsername());
             model.addAttribute("setCount", sets.size());
             model.addAttribute("folders", folders);
@@ -100,14 +98,15 @@ public class ProfileController {
         }
 
         try {
-            // User userObj = _accountService.getUserById(userId);
-            // ViewUserDto user = new ViewUserDto(userObj.getUserId(),
-            // userObj.getFullName(), userObj.getUserName());
+            User userObj = _accountService.getUserById(userId);
 
-            // List<Set> sets = _setService.currentUserSets();
+            List<Set> sets = _setService.getSetsByUserId(userObj.getUserId());
 
-            // model.addAttribute("user", user);
-            // model.addAttribute("sets", sets);
+            model.addAttribute("user", user);
+            model.addAttribute("sets", sets);
+            model.addAttribute("username", userObj.getUsername());
+            model.addAttribute("fullName", userObj.getFullName());
+            model.addAttribute("totalSets", sets.size());
 
         } catch (Exception e) {
             model.addAttribute("error", e.toString());

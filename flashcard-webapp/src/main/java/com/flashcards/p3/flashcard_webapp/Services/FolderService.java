@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
-import com.flashcards.p3.flashcard_webapp.dtos.ViewUserDto;
 import com.flashcards.p3.flashcard_webapp.models.*;
 import com.flashcards.p3.flashcard_webapp.dtos.*;
 
@@ -337,18 +336,14 @@ public class FolderService {
      * @throws IllegalArgumentException if folder does not belong to the logged in
      *                                  user.
      */
-    public boolean deleteSetFromFolder(Set set, Folder folder) throws SQLException, IllegalArgumentException {
-
-        if (!folder.getUser().equals(accountService.getLoggedInUser())) {
-            throw new IllegalArgumentException("Folder does not belong to user");
-        }
+    public boolean deleteSetFromFolder(String setId, String folderId) throws SQLException, IllegalArgumentException {
 
         final String sql = "DELETE FROM Set_Folders WHERE setId = ? AND folderId = ?;";
 
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, set.getSetId());
-            pstmt.setString(2, folder.getFolderId());
+            pstmt.setString(1, setId);
+            pstmt.setString(2, folderId);
 
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;

@@ -5,12 +5,16 @@
 }
 
 .set-preview {
-  min-width: 800px;
+  max-width: 600px;
+  margin: 1rem auto;
   padding: 1.25rem;
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.set-preview:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .set-prev-header {
@@ -27,6 +31,8 @@
 
 .set-sub-title {
   display: flex;
+  align-items: end;
+  justify-content: space-between;
   width: 100%;
 }
 
@@ -125,4 +131,3 @@
 .edit-form .form-group {
   margin-bottom: 1rem;
 }
-

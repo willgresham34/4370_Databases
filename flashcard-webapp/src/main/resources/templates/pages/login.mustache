@@ -2,8 +2,8 @@
   {{$title}}Login{{/title}}
 
   {{$body}}
+  {{> fragments/error_message}}
   <div class="container center-align narrow">
-    {{> fragments/error_message}}
     <form method="post" action="/auth/login">
       <input name="username" class="short-input full" type="text" placeholder="Username">
       <input name="password" class="short-input full" type="password" placeholder="Password">

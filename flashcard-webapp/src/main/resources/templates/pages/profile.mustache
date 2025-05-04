@@ -5,12 +5,13 @@
   <div class="user-container">
     {{> fragments/error_message}}
     <!-- User Info -->
-   <div class="profile-info">
-      <h2 class="profile-name">{{firstName}} {{lastName}}</h2>
+    <div class="profile-info">
+      <h2 class="profile-name">{{fullName}}</h2>
       <p class="profile-username">@{{username}}</p>
-      <div>Total Sets: {{setCount}}</div>
-    </div> 
+    </div>
+    <div>Total Sets: {{setCount}}</div>
   </div>
+
 
     <!-- Folder Grid… -->
   <section class="folder-section">
@@ -80,7 +81,7 @@
           <label for="setCategory">Category</label>
           <input id="setCategory" name="setCategory" type="text" />
         </div>
-        <button type="submit" class="btn btn-primary">Create Set</button>
+        <button type="submit" class="btn-primary">Create Set</button>
       </form>
     </div>
   </div>
@@ -94,7 +95,7 @@
           <label for="folderName">Name</label>
           <input id="folderName" name="folderName" type="text" required />
         </div>
-        <button type="submit" class="btn btn-primary">Create Folder</button>
+        <button type="submit" class="btn-primary">Create Folder</button>
       </form>
     </div>
   </div>

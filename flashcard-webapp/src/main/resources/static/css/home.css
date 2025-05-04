@@ -23,7 +23,6 @@
 }
 
 /* set preview */
-
 .set-preview {
   max-width: 600px;
   margin: 1rem auto;
@@ -34,7 +33,6 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 .set-preview:hover {
-  transform: translateY(-3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
