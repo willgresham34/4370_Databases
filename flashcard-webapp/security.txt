@@ -1,6 +1,0 @@
-- To properly encrypt and store passwords, the user enters their password into the password field when creating an account.
-    From there, java uses the passwordEncoder class to encrypt user passwords into a hash. This has is then stored in the "password" 
-    column in the "Users" table in the project's database.
-- Example:
-    Original text: "password"
-    Hash: "$2a$10$DTVCJ8wqn1nK//m7BEXOJeCqUrw6sbV/fufFqDFXG3Y806nq6dy2K"
