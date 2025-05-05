@@ -29,3 +29,13 @@ Username    | Password
 "bobB34"    | "password"
 "carolC45"  | "password"
 
+
+Where to find files:
+Most of our submission files are in the Submission_files folder however all of
+the sql related files are in the sql folder such as our ddl.sql, queries.sql, and data.sql.
+
+How to run: 
+Make sure docker instance is running.
+In base folder "flashcard-webapp" running the follow command in terminal
+mvn spring-boot:run 
+open http://localhost:8080 to view site
